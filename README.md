@@ -20,6 +20,7 @@ The app is available in English and European Portuguese, and follows the browser
 - **Spending envelopes.** For expenses paid in several goes (groceries, fuel, health), the planned amount becomes a budget. Each purchase is logged and the app shows how much is left.
 - **Annual sinking funds.** One fund per yearly expense (car insurance, property tax…), topped up every month or from the holiday and Christmas bonuses. Each fund shows whether it will be ready by the due date.
 - **Shared child expenses.** Expenses paid in full and split 50/50. Half counts towards my budget, the other half is tracked as owed (to request → requested → received). A ready-to-send message lists everything still to be requested.
+- **Settings.** Cost splitting can be turned off, the other person renamed and the share changed from 50%. Funding pots from bonuses can be turned off too, so the same app works for couples, single people or flatmates.
 - **Pay-cycle months.** Income received in one month pays the following month's bills. The app opens on the right month based on payday.
 - **Summary at a glance.** Income, paid, set aside, still to pay and what is left to save.
 - **Backup and restore.** Export and import all data as a JSON file, using the native share sheet on phones.
@@ -46,7 +47,7 @@ Everything is stored under `localStorage` keys prefixed with `contas:`.
 
 | Key | Content |
 |---|---|
-| `config` | Usual expenses and their order, sinking funds, recurring shared expenses, payday |
+| `config` | Usual expenses and their order, sinking funds, recurring shared expenses, payday, settings |
 | `mes-YYYY-MM` | One document per month: income, each expense's amount and status, logged purchases |
 | `partilhadas` | Shared expenses and their request status |
 | `_lang`, `_ultimaCopia` | Device preferences: language and last backup date (not included in backups) |
