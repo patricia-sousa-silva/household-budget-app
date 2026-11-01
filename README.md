@@ -2,13 +2,17 @@
 
 An offline-first Progressive Web App for monthly household budgeting. I built it to replace the paper notebook where I had been tracking bills, savings and shared expenses by hand for years.
 
-The interface is in European Portuguese, because I built the app for my own day-to-day use.
+**Live demo:** [contas.patriciasousasilva.com/#demo-en](https://contas.patriciasousasilva.com/#demo-en) opens the app with sample data. Nothing you change is saved.
+
+The app is available in English and European Portuguese, and follows the browser's language by default.
 
 <p align="center">
-  <img src="docs/screenshot.png" alt="Monthly view with the summary, bills checked off and spending envelopes" width="320">
+  <img src="docs/screenshot-en.png" alt="Monthly view in English with the summary, bills checked off and spending envelopes" width="300">
+  &nbsp;
+  <img src="docs/screenshot-pt.png" alt="The same monthly view in Portuguese" width="300">
 </p>
 
-<p align="center"><sub>Screenshot with example data.</sub></p>
+<p align="center"><sub>Screenshots with sample data.</sub></p>
 
 ## Features
 
@@ -20,6 +24,8 @@ The interface is in European Portuguese, because I built the app for my own day-
 - **Summary at a glance.** Income, paid, set aside, still to pay and what is left to save.
 - **Backup and restore.** Export and import all data as a JSON file, using the native share sheet on phones.
 - **Installable and offline.** Works without a connection once installed.
+- **English and Portuguese.** Language switch at the bottom of the page, with numbers, currency and month names formatted for each language.
+- **Sample data mode.** Opening the app with `#demo-en` or `#demo-pt` loads sample data kept only in memory, so visitors can try every feature without touching anyone's real data.
 
 ## Technical decisions
 
@@ -31,6 +37,8 @@ The interface is in European Portuguese, because I built the app for my own day-
 | Web App Manifest with maskable icons | Installs to the home screen like a native app on Android and iOS. |
 | JSON export and import | Device storage can be lost, so backups are part of the design. The app reminds me when the last backup is older than 30 days. |
 | Static hosting on Cloudflare Pages | Free, fast and served under my own domain over HTTPS. |
+| Translations in one dictionary, formats from `Intl` | One code base for both languages. `Intl.NumberFormat` and `Intl.DateTimeFormat` handle currency, decimals and month names, and the input parser reads `1.234,56` or `1,234.56` depending on the language. |
+| Sample data kept in memory | The demo swaps the storage layer for an in-memory map, so it can never overwrite a real budget on the same device. |
 
 ## Data model
 
@@ -41,6 +49,7 @@ Everything is stored under `localStorage` keys prefixed with `contas:`.
 | `config` | Usual expenses and their order, sinking funds, recurring shared expenses, payday |
 | `mes-YYYY-MM` | One document per month: income, each expense's amount and status, logged purchases |
 | `partilhadas` | Shared expenses and their request status |
+| `_lang`, `_ultimaCopia` | Device preferences: language and last backup date (not included in backups) |
 
 A backup file wraps these keys as `{ app, versao, exportado, dados }`.
 
@@ -52,7 +61,7 @@ manifest.webmanifest   Name, colours and icons for installation
 sw.js                  Service worker for offline use
 _headers               Cache rules for Cloudflare Pages
 icons/                 App icons
-docs/                  Screenshot used in this README
+docs/                  Screenshots used in this README
 ```
 
 ## Run locally
@@ -79,4 +88,3 @@ When releasing a new version:
 
 - Yearly overview with a chart of spending by category
 - Sync between devices with end-to-end encryption
-- English interface

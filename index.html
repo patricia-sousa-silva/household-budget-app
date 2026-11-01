@@ -126,6 +126,7 @@ header.top{display:flex;align-items:center;justify-content:space-between;gap:8px
 .gasto button{border:0;background:none;color:var(--warn);font-size:15px;padding:4px 6px}
 .plano{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
 .chk{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);font-weight:600}
+.add label.chk{flex-direction:row;flex:none;align-items:center}
 .chk input{width:18px;height:18px;accent-color:var(--pen)}
 .tnome,.campo{width:100%;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--bg);min-width:0}
 .tnome{font-weight:600}
@@ -178,105 +179,288 @@ textarea.copia{width:100%;min-height:120px;border:1px solid var(--line);border-r
 
 .nota{font-size:12px;color:var(--muted)}
 .estado{font-size:12px;color:var(--muted);text-align:center;min-height:1.2em}
+.demo{background:var(--jar-soft);color:var(--ink);border:1px solid var(--jar);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;font-size:13px}
+.demo b{color:var(--jar)}
+.demo .btn{background:var(--jar)}
+.rodape{display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:4px;text-align:center}
+.idioma{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--paper)}
+.idioma button{border:0;background:transparent;padding:7px 14px;font-size:13px;font-weight:600;color:var(--muted)}
+.idioma button[aria-pressed="true"]{background:var(--pen-soft);color:var(--pen)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 
 <div class="wrap" id="app">
+  <section class="demo" id="demo" hidden>
+    <div data-i18n-html="demoBanner"></div>
+    <div><button class="btn sm" type="button" id="sairDemo" data-i18n="exitDemo"></button></div>
+  </section>
   <header class="top">
-    <button class="nav" id="ant" aria-label="Mês anterior">‹</button>
+    <button class="nav" id="ant" data-i18n-aria="prevMonth">‹</button>
     <div class="mes" id="mesTitulo">—</div>
-    <button class="nav" id="seg" aria-label="Mês seguinte">›</button>
+    <button class="nav" id="seg" data-i18n-aria="nextMonth">›</button>
   </header>
   <section class="instalar" id="instalar" hidden>
     <div id="instalarTxt"></div>
-    <div class="acoes"><button class="btn sm" type="button" id="instalarBtn" hidden>Instalar</button><button class="link" type="button" id="instalarFechar">Agora não</button></div>
+    <div class="acoes"><button class="btn sm" type="button" id="instalarBtn" hidden data-i18n="install"></button><button class="link" type="button" id="instalarFechar" data-i18n="notNow"></button></div>
   </section>
   <section class="resumo" id="resumo"></section>
 
-  <div class="cab"><h2>Contas do mês</h2><button class="link" id="modo">Editar lista</button></div>
-  <section class="lista" id="lista"><div class="vazio">A abrir o teu caderno…</div></section>
+  <div class="cab"><h2 data-i18n="billsTitle"></h2><button class="link" id="modo"></button></div>
+  <section class="lista" id="lista"><div class="vazio">…</div></section>
   <form class="add" id="addForm" autocomplete="off">
     <div class="row">
-      <input type="text" id="addNome" placeholder="Nova despesa (ex.: Ginásio)" aria-label="Nome da despesa" required>
-      <div class="valor"><input id="addValor" inputmode="decimal" placeholder="0,00" aria-label="Valor"><span>€</span></div>
+      <input type="text" id="addNome" data-i18n-ph="newExpensePh" data-i18n-aria="expenseName" required>
+      <div class="valor"><input id="addValor" inputmode="decimal" placeholder="0,00" data-i18n-aria="amount"><span>€</span></div>
     </div>
     <div class="row">
-      <div class="tipo" role="group" aria-label="Tipo de despesa">
-        <button type="button" id="tFixa" aria-pressed="true">Todos os meses</button>
-        <button type="button" id="tMes" aria-pressed="false">Só este mês</button>
+      <div class="tipo" role="group" data-i18n-aria="expenseType">
+        <button type="button" id="tFixa" aria-pressed="true" data-i18n="everyMonth"></button>
+        <button type="button" id="tMes" aria-pressed="false" data-i18n="thisMonthOnly"></button>
       </div>
-      <button class="btn" type="submit">Adicionar</button>
+      <button class="btn" type="submit" data-i18n="add"></button>
     </div>
-    <label class="chk"><input type="checkbox" id="addOrc"> Vou gastando aos poucos (ex.: supermercado, saúde)</label>
+    <label class="chk"><input type="checkbox" id="addOrc"> <span data-i18n="addOrc"></span></label>
   </form>
 
-  <div class="cab"><div><h2>Mealheiros anuais</h2><p>Uma reserva por despesa anual, a crescer todos os meses.</p></div><button class="link" id="novoJar">+ Novo</button></div>
+  <div class="cab"><div><h2 data-i18n="jarsTitle"></h2><p data-i18n="jarsSub"></p></div><button class="link" id="novoJar" data-i18n="newJar"></button></div>
   <form class="add" id="jarForm" autocomplete="off" hidden>
     <div class="grade">
-      <label class="todo">Despesa anual<input type="text" class="campo" id="jNome" placeholder="ex.: Seguro do carro" required></label>
-      <label>Valor anual<span class="valor"><input id="jTotal" inputmode="decimal" placeholder="0,00" required><span>€</span></span></label>
-      <label>Pago em<select id="jMes" class="campo"></select></label>
-      <label>Já tenho guardado<span class="valor"><input id="jInicial" inputmode="decimal" placeholder="0,00"><span>€</span></span></label>
-      <label class="todo">Como vais juntar<select id="jModo" class="campo"><option value="mensal">Todos os meses</option><option value="ferias">Subsídio de férias (recebido em junho)</option><option value="natal">Subsídio de Natal (recebido em novembro)</option><option value="ambos">Metade em cada subsídio</option></select></label>
-      <label class="todo" id="jMensalL">Valor a pôr de parte por mês<span class="valor"><input id="jMensal" inputmode="decimal" placeholder="valor anual ÷ 12"><span>€</span></span></label>
+      <label class="todo"><span data-i18n="jName"></span><input type="text" class="campo" id="jNome" data-i18n-ph="jNamePh" required></label>
+      <label><span data-i18n="jTotal"></span><span class="valor"><input id="jTotal" inputmode="decimal" placeholder="0,00" required><span>€</span></span></label>
+      <label><span data-i18n="jDue"></span><select id="jMes" class="campo"></select></label>
+      <label><span data-i18n="jStart"></span><span class="valor"><input id="jInicial" inputmode="decimal" placeholder="0,00"><span>€</span></span></label>
+      <label class="todo"><span data-i18n="jHow"></span><select id="jModo" class="campo"></select></label>
+      <label class="todo"><span id="jMensalL"></span><span class="valor"><input id="jMensal" inputmode="decimal"><span>€</span></span></label>
     </div>
-    <div class="acoes"><button class="btn jar" type="submit">Criar mealheiro</button><button class="btn sec" type="button" id="jCancel">Cancelar</button></div>
+    <div class="acoes"><button class="btn jar" type="submit" data-i18n="createJar"></button><button class="btn sec" type="button" id="jCancel" data-i18n="cancel"></button></div>
   </form>
   <section class="jars" id="jars"></section>
 
-  <div class="cab"><div><h2>A pedir ao pai</h2><p>Pagas tudo, metade fica no teu orçamento e a outra metade pedes ao pai.</p></div><button class="link" id="copiar">Copiar pedido</button></div>
+  <div class="cab"><div><h2 data-i18n="paiTitle"></h2><p data-i18n="paiSub"></p></div><button class="link" id="copiar" data-i18n="copyReq"></button></div>
   <section class="lista" id="pai"></section>
   <div id="copiaBox" hidden></div>
   <form class="add" id="paiForm" autocomplete="off">
     <div class="row">
-      <input type="text" id="pNome" placeholder="Despesa do filho (ex.: ATL, consulta)" aria-label="Descrição" required>
-      <div class="valor"><input id="pValor" inputmode="decimal" placeholder="total" aria-label="Valor total pago" required><span>€</span></div>
+      <input type="text" id="pNome" data-i18n-ph="pNamePh" data-i18n-aria="description" required>
+      <div class="valor"><input id="pValor" inputmode="decimal" data-i18n-ph="pTotalPh" data-i18n-aria="pTotalAria" required><span>€</span></div>
     </div>
     <div class="row">
-      <div class="tipo" role="group" aria-label="Repetição">
-        <button type="button" id="pFixa" aria-pressed="false">Todos os meses</button>
-        <button type="button" id="pMes" aria-pressed="true">Só este mês</button>
+      <div class="tipo" role="group" data-i18n-aria="repeat">
+        <button type="button" id="pFixa" aria-pressed="false" data-i18n="everyMonth"></button>
+        <button type="button" id="pMes" aria-pressed="true" data-i18n="thisMonthOnly"></button>
       </div>
-      <button class="btn" type="submit">Adicionar</button>
+      <button class="btn" type="submit" data-i18n="add"></button>
     </div>
-    <span class="nota">Escreve o valor total. Metade conta nas tuas despesas do mês e a outra metade fica a pedir ao pai.</span>
+    <span class="nota" data-i18n="paiNote"></span>
   </form>
 
   <section class="add" id="backup">
-    <div><h2 style="font-family:var(--display);font-size:19px;margin:0;font-weight:600">Cópia de segurança</h2>
-      <p class="nota" style="margin:4px 0 0" id="ultimaCopia">Os teus dados ficam só neste telemóvel. Exporta uma cópia de vez em quando.</p></div>
-    <div class="acoes"><button class="btn sec" type="button" id="exp">Exportar cópia</button><button class="btn sec" type="button" id="imp">Importar cópia</button><button class="link" type="button" id="impTxt">Colar texto</button></div>
+    <div><h2 style="font-family:var(--display);font-size:19px;margin:0;font-weight:600" data-i18n="backupTitle"></h2>
+      <p class="nota" style="margin:4px 0 0" id="ultimaCopia"></p></div>
+    <div class="acoes"><button class="btn sec" type="button" id="exp" data-i18n="export"></button><button class="btn sec" type="button" id="imp" data-i18n="import"></button><button class="link" type="button" id="impTxt" data-i18n="pasteText"></button></div>
     <input type="file" id="impFile" accept=".json,application/json,text/plain" hidden>
     <div id="expBox" hidden></div>
   </section>
 
   <div class="estado" id="estado"></div>
-  <p class="nota" style="text-align:center;margin:0">Versão 3.1 · 1 de novembro de 2026</p>
+  <footer class="rodape">
+    <div class="idioma" role="group" data-i18n-aria="language">
+      <button type="button" data-lang="pt" lang="pt">Português</button>
+      <button type="button" data-lang="en" lang="en">English</button>
+    </div>
+    <button class="link" type="button" id="verDemo" data-i18n="trySample"></button>
+    <p class="nota" style="margin:0" data-i18n="version"></p>
+  </footer>
 </div>
 
 <script>
 (function(){
-const MESES=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
-const SUGERIDAS=["Renda / prestação da casa","Luz","Água","Gás","Internet, TV e telemóvel","Supermercado","Combustível","Seguros","Saúde","Escola e atividades","Vestuário","Poupança"];
-const ESTADOS=["Por pedir","Pedido","Recebido"];
-const eur=new Intl.NumberFormat("pt-PT",{style:"currency",currency:"EUR"});
-const dec=new Intl.NumberFormat("pt-PT",{minimumFractionDigits:2,maximumFractionDigits:2});
+/* =====================================================================
+   Textos da app em português e inglês.
+   Cada chave tem um texto ou uma função que recebe os valores a inserir.
+   ===================================================================== */
+const TXT={
+pt:{
+  appTitle:"Contas do Mês", prevMonth:"Mês anterior", nextMonth:"Mês seguinte", install:"Instalar", notNow:"Agora não",
+  billsTitle:"Contas do mês", editList:"Editar lista", done:"Concluir", opening:"A abrir…",
+  newExpensePh:"Nova despesa (ex.: Ginásio)", expenseName:"Nome da despesa", amount:"Valor", expenseType:"Tipo de despesa",
+  everyMonth:"Todos os meses", thisMonthOnly:"Só este mês", add:"Adicionar", addOrc:"Vou gastando aos poucos (ex.: supermercado, saúde)",
+  jarsTitle:"Mealheiros anuais", jarsSub:"Uma reserva por despesa anual, a crescer todos os meses.", newJar:"+ Novo",
+  jName:"Despesa anual", jNamePh:"ex.: Seguro do carro", jTotal:"Valor anual", jDue:"Pago em", jStart:"Já tenho guardado",
+  jHow:"Como vais juntar", jHowEdit:"Como juntas",
+  opt_mensal:"Todos os meses", opt_ferias:"Subsídio de férias (recebido em junho)", opt_natal:"Subsídio de Natal (recebido em novembro)", opt_ambos:"Metade em cada subsídio",
+  mode_mensal:"por mês", mode_ferias:"no subsídio de férias", mode_natal:"no subsídio de Natal", mode_ambos:"em cada subsídio",
+  jSetAside:"Valor a pôr de parte {modo}", jPh12:"valor anual ÷ 12", jPh2:"valor anual ÷ 2", jPh1:"valor anual",
+  createJar:"Criar mealheiro", cancel:"Cancelar",
+  paiTitle:"A pedir ao pai", paiSub:"Pagas tudo, metade fica no teu orçamento e a outra metade pedes ao pai.", copyReq:"Copiar pedido",
+  pNamePh:"Despesa do filho (ex.: ATL, consulta)", description:"Descrição", pTotalPh:"total", pTotalAria:"Valor total pago", repeat:"Repetição",
+  paiNote:"Escreve o valor total. Metade conta nas tuas despesas do mês e a outra metade fica a pedir ao pai.",
+  backupTitle:"Cópia de segurança", export:"Exportar cópia", import:"Importar cópia", pasteText:"Colar texto",
+  version:"Versão 4 · 1 de novembro de 2026", trySample:"Ver com dados de exemplo", language:"Idioma",
+  saved:"Guardado neste dispositivo", saveFail:"Não foi possível guardar: o espaço do dispositivo pode estar cheio. Exporta uma cópia de segurança.",
+  demoSaved:"Exemplo: as alterações não ficam guardadas",
+  receivedIn:"Recebi em {mes}", incomePh:"ex.: 1108,09 + 53,03", forBillsOf:"Para as contas de {mes} · recebo por volta do dia", payday:"Dia em que recebes",
+  enterIncome:"Indica o que recebeste para ver o que sobra", leftToSave:"Sobra para poupar", shortfall:"Falta para cobrir as contas",
+  paid:"Já pago", setAside:"Posto de parte", toPay:"Por pagar / gastar", totalMonth:"Total das tuas despesas este mês",
+  childTotal:"Despesas do filho: total {t}", yourShare:"a tua parte {v}", owed:"Ainda por receber do pai",
+  emptyTitle:"Ainda sem contas neste caderno", emptyText:"Adiciona em baixo as tuas despesas fixas, ou começa com uma lista sugerida e depois põe os teus valores.",
+  useSuggested:"Usar uma lista sugerida", name:"Nome", usualOf:"Valor habitual de {n}", moveUp:"Subir {n}", moveDown:"Descer {n}",
+  bitByBit:"Aos poucos", bitByBitTitle:"Vou gastando aos poucos", toJar:"Mealheiro", split:"Dividir", deleteX:"Apagar {n}", noFixed:"Sem contas fixas.",
+  editHelp:"Usa ↑ ↓ para arrumar a lista e juntar as despesas parecidas. <b>Mealheiro</b> passa a despesa para os mealheiros anuais; <b>Dividir</b> passa-a para as despesas a pedir ao pai. <b>Aos poucos</b> serve para despesas que pagas em várias vezes (supermercado, saúde): o valor passa a ser o teu orçamento e vais registando cada gasto. Os valores habituais valem para este mês e para os seguintes.",
+  addSuggested:"Juntar a lista sugerida ({n} em falta)", confirmDel:"Apagar “{n}”{resto}?", fromNowOn:" deste mês e dos seguintes",
+  logSpendOn:"Registar gasto em {n}", spentOf:"gasto {g} de {p}", onlyTag:"só este mês", overBudget:"acima do previsto", available:"ainda disponível",
+  spentAria:"Valor gasto", notePh:"Nota (opcional), ex.: Continente", log:"Registar", deleteSpend:"Apagar gasto de {v}", noSpend:"Ainda sem gastos este mês.",
+  planned:"Previsto para este mês", plannedFor:"Previsto para {n} este mês", paidAria:"{n} paga", usualTag:"habitual {v}", valueThisMonth:"Valor de {n} este mês",
+  setAsideSep:"Pôr de parte nos mealheiros", setAsideAria:"{n} posto de parte", savedTag:"guardado {v}", setAsideFor:"Valor a pôr de parte para {n}",
+  convJar:"Confirma o valor anual e o mês em que pagas, depois carrega em Criar mealheiro.", convPai:"Confirma o valor total (as duas metades) e carrega em Adicionar.",
+  no:"Não", del:"Apagar", yes:"Sim",
+  noJarsTitle:"Nenhum mealheiro ainda", noJarsText:"Cria um por cada despesa anual (seguro do carro, IUC, revisão, matrículas…). Cada mês dás o visto quando pões o valor de parte e vês quanto já tens para cada uma.",
+  dueNowOk:"Paga este mês. Tens o suficiente: sobram {v}.", dueNowShort:"Paga este mês e faltam {v}.", full:"Já tens o valor completo.",
+  bonusOk:x=>`Com ${x.n===1?"o próximo subsídio":"os próximos subsídios"} (${x.v}) chegas a tempo.`,
+  bonusShort:x=>x.n?`Mesmo com ${x.v} dos subsídios, faltam ${x.f} até ${x.m}.`:`Não recebes subsídio antes de pagar. Faltam ${x.f} até ${x.m}.`,
+  monthlyOk:"Com {v} por mês chegas a tempo.",
+  monthlyShort:x=>`Para chegar a ${x.m} precisas de ${x.v} por mês${x.r>0?` (${x.r} ${x.r===1?"mês":"meses"})`:""}.`,
+  amountPaid:"Valor que pagaste", logPayment:"Registar pagamento em {m}", monthlyValue:"Valor {modo}", startBalance:"Saldo inicial", save:"Guardar",
+  delJarQ:"Apagar o mealheiro “{n}” e todo o seu histórico?", dueThisMonth:"Paga este mês", dueIn:"Paga em {m}", savedLbl:"Guardado",
+  ofTotal:"de {t} · {v} {modo}", lastPayment:"Último pagamento: {v} em {m}", iPaid:"Paguei a despesa", edit:"Editar",
+  estados:["Por pedir","Pedido","Recebido"], stateAria:"Estado: {e}. Tocar para mudar",
+  nothingToClaim:"Nada por pedir. Adiciona em baixo as despesas do teu filho que são para dividir: as de todos os meses (ATL, mensalidades…) e as pontuais.",
+  toClaim:"a pedir {v}", halfTick:"metade {v} · dá o visto quando pagares", totalFor:"Valor total de {n}", stopRepeat:"Deixar de repetir",
+  oneOffSep:"Pontuais e por receber", youPaid:"pagaste {v}", receivedInM:"recebido em {m}", totalOwed:"Total a receber do pai",
+  stopQ:"Deixar de repetir “{n}” a partir deste mês?",
+  msg:x=>`Despesas ${x.meses}\n`+x.itens.map(i=>`${(Number.isInteger(i.valor)?String(i.valor):x.dec(i.valor))}€ ${i.descricao}`).join("\n")+`\n\n${x.dec(x.soma)}/2= ${x.dec(x.metade)}€`,
+  markRequested:"Marcar como pedidas", close:"Fechar", copied:"Mensagem copiada. Cola-a onde costumas falar com o pai.", selectCopy:"Seleciona o texto e copia-o.",
+  backupIntroEmpty:"Os teus dados ficam só neste dispositivo. Se vens de outro telemóvel ou da versão anterior, importa aqui a cópia que exportaste.",
+  lastBackup:x=>`Última cópia: ${x.d}${x.dias>30?` (há ${x.dias} dias). Está na altura de fazer outra.`:"."}`,
+  noBackup:"Ainda não fizeste nenhuma cópia. Os dados ficam só neste dispositivo: se o perderes, perdes as contas.",
+  shareTitle:"Cópia das Contas do Mês", shared:"Cópia partilhada. Guarda-a num sítio seguro (Ficheiros, Drive ou email).", downloaded:"Ficheiro <b>{f}</b> guardado nas transferências.",
+  pastePh:"Cola aqui o texto da cópia", readBackup:"Ler cópia", notBackup:"Este ficheiro não é uma cópia das Contas do Mês. Escolhe o ficheiro .json que exportaste.",
+  backupOf:x=>`Cópia de ${x.d}, com ${x.n} ${x.n===1?"mês":"meses"}.`, willReplace:" Os dados que tens agora nesta app vão ser substituídos.",
+  replace:"Substituir pelos da cópia", importBtn:"Importar", importFail:"Não foi possível importar: o espaço do dispositivo pode estar cheio.",
+  installPrompt:"<b>Instala a app</b> para a abrires como as outras, mesmo sem internet.",
+  installIOS:"<b>Instala a app:</b> no Safari, toca em Partilhar e depois em <b>Adicionar ao ecrã principal</b>. Importa a tua cópia <b>já dentro da app instalada</b>: no iPhone, o Safari e a app guardam os dados em separado.",
+  installOther:"<b>Instala a app:</b> no menu do browser (⋮), escolhe <b>Instalar app</b> ou <b>Adicionar ao ecrã principal</b>.",
+  demoBanner:"Estás a ver <b>dados de exemplo</b>. Nada do que mudares fica guardado e os teus dados não são tocados.", exitDemo:"Sair do exemplo",
+  sugeridas:["Renda / prestação da casa","Luz","Água","Gás","Internet, TV e telemóvel","Supermercado","Combustível","Seguros","Saúde","Escola e atividades","Vestuário","Poupança"],
+  demo:{renda:"Renda",luz:"Luz",net:"Internet e telemóvel",super:"Supermercado",comb:"Combustível",poup:"Poupança",lojaA:"Continente",lojaB:"Lidl",posto:"Galp",
+    seguro:"Seguro do carro",iuc:"IUC",natacao:"Natação",visita:"Visita de estudo",material:"Material escolar"}
+},
+en:{
+  appTitle:"Household Budget", prevMonth:"Previous month", nextMonth:"Next month", install:"Install", notNow:"Not now",
+  billsTitle:"This month's bills", editList:"Edit list", done:"Done", opening:"Opening…",
+  newExpensePh:"New expense (e.g. Gym)", expenseName:"Expense name", amount:"Amount", expenseType:"Expense type",
+  everyMonth:"Every month", thisMonthOnly:"This month only", add:"Add", addOrc:"I spend it bit by bit (e.g. groceries, health)",
+  jarsTitle:"Savings pots", jarsSub:"One pot per yearly expense, topped up as the year goes.", newJar:"+ New",
+  jName:"Yearly expense", jNamePh:"e.g. Car insurance", jTotal:"Yearly amount", jDue:"Due in", jStart:"Already saved",
+  jHow:"How you'll save", jHowEdit:"How you save",
+  opt_mensal:"Every month", opt_ferias:"Holiday bonus (paid in June)", opt_natal:"Christmas bonus (paid in November)", opt_ambos:"Half from each bonus",
+  mode_mensal:"per month", mode_ferias:"from the holiday bonus", mode_natal:"from the Christmas bonus", mode_ambos:"from each bonus",
+  jSetAside:"Amount to set aside {modo}", jPh12:"yearly amount ÷ 12", jPh2:"yearly amount ÷ 2", jPh1:"yearly amount",
+  createJar:"Create pot", cancel:"Cancel",
+  paiTitle:"Shared child costs", paiSub:"You pay in full: half stays in your budget and you claim the other half from the other parent.", copyReq:"Copy request",
+  pNamePh:"Child expense (e.g. after-school club, doctor)", description:"Description", pTotalPh:"total", pTotalAria:"Total amount paid", repeat:"Repeats",
+  paiNote:"Enter the full amount. Half counts towards your month and the other half is claimed from the other parent.",
+  backupTitle:"Backup", export:"Export backup", import:"Import backup", pasteText:"Paste text",
+  version:"Version 4 · 1 November 2026", trySample:"Try with sample data", language:"Language",
+  saved:"Saved on this device", saveFail:"Couldn't save: the device storage may be full. Export a backup.",
+  demoSaved:"Sample data: changes are not saved",
+  receivedIn:"Received in {mes}", incomePh:"e.g. 1108.09 + 53.03", forBillsOf:"For {mes}'s bills · I get paid around day", payday:"Payday",
+  enterIncome:"Enter what you received to see what's left", leftToSave:"Left to save", shortfall:"Short of covering the bills",
+  paid:"Paid", setAside:"Set aside", toPay:"Still to pay / spend", totalMonth:"Your total spending this month",
+  childTotal:"Child costs: total {t}", yourShare:"your share {v}", owed:"Still owed by the other parent",
+  emptyTitle:"No bills yet", emptyText:"Add your regular expenses below, or start from a suggested list and fill in your amounts.",
+  useSuggested:"Use a suggested list", name:"Name", usualOf:"Usual amount for {n}", moveUp:"Move {n} up", moveDown:"Move {n} down",
+  bitByBit:"Bit by bit", bitByBitTitle:"Spent in several goes", toJar:"Pot", split:"Split", deleteX:"Delete {n}", noFixed:"No regular bills.",
+  editHelp:"Use ↑ ↓ to sort the list and keep similar expenses together. <b>Pot</b> moves the expense to the yearly savings pots; <b>Split</b> moves it to the shared child costs. <b>Bit by bit</b> is for expenses paid in several goes (groceries, health): the amount becomes your budget and you log each purchase. Usual amounts apply to this month and the following ones.",
+  addSuggested:"Add the suggested list ({n} missing)", confirmDel:"Delete “{n}”{resto}?", fromNowOn:" from this month on",
+  logSpendOn:"Log spending on {n}", spentOf:"spent {g} of {p}", onlyTag:"this month only", overBudget:"over budget", available:"still available",
+  spentAria:"Amount spent", notePh:"Note (optional), e.g. supermarket", log:"Log", deleteSpend:"Delete {v} purchase", noSpend:"Nothing spent yet this month.",
+  planned:"Planned for this month", plannedFor:"Planned for {n} this month", paidAria:"{n} paid", usualTag:"usually {v}", valueThisMonth:"Amount for {n} this month",
+  setAsideSep:"Set aside in savings pots", setAsideAria:"{n} set aside", savedTag:"saved {v}", setAsideFor:"Amount to set aside for {n}",
+  convJar:"Check the yearly amount and the due month, then tap Create pot.", convPai:"Check the full amount (both halves) and tap Add.",
+  no:"No", del:"Delete", yes:"Yes",
+  noJarsTitle:"No savings pots yet", noJarsText:"Create one for each yearly expense (car insurance, road tax, servicing, school fees…). Each month, tick it off when you set the money aside and see how much you have for each one.",
+  dueNowOk:"Due this month. You have enough, with {v} to spare.", dueNowShort:"Due this month and {v} is still missing.", full:"You already have the full amount.",
+  bonusOk:x=>`With the next ${x.n===1?"bonus":"bonuses"} (${x.v}) you'll be ready in time.`,
+  bonusShort:x=>x.n?`Even with ${x.v} from bonuses, ${x.f} will be missing by ${x.m}.`:`No bonus arrives before it's due. ${x.f} missing by ${x.m}.`,
+  monthlyOk:"With {v} a month you'll be ready in time.",
+  monthlyShort:x=>`To be ready by ${x.m} you need ${x.v} a month${x.r>0?` (${x.r} ${x.r===1?"month":"months"})`:""}.`,
+  amountPaid:"Amount you paid", logPayment:"Log payment in {m}", monthlyValue:"Amount {modo}", startBalance:"Starting balance", save:"Save",
+  delJarQ:"Delete the “{n}” pot and all its history?", dueThisMonth:"Due this month", dueIn:"Due in {m}", savedLbl:"Saved",
+  ofTotal:"of {t} · {v} {modo}", lastPayment:"Last payment: {v} in {m}", iPaid:"I paid it", edit:"Edit",
+  estados:["To request","Requested","Received"], stateAria:"Status: {e}. Tap to change",
+  nothingToClaim:"Nothing to claim. Add your child's shared costs below: the monthly ones (clubs, fees…) and one-offs.",
+  toClaim:"to claim {v}", halfTick:"half {v} · tick it when you pay", totalFor:"Total for {n}", stopRepeat:"Stop repeating",
+  oneOffSep:"One-offs and outstanding", youPaid:"you paid {v}", receivedInM:"received in {m}", totalOwed:"Total owed by the other parent",
+  stopQ:"Stop repeating “{n}” from this month?",
+  msg:x=>`Expenses ${x.meses}\n`+x.itens.map(i=>`${x.eur(i.valor)} ${i.descricao}`).join("\n")+`\n\n${x.eur(x.soma)} / 2 = ${x.eur(x.metade)}`,
+  markRequested:"Mark as requested", close:"Close", copied:"Message copied. Paste it wherever you usually message the other parent.", selectCopy:"Select the text and copy it.",
+  backupIntroEmpty:"Your data stays on this device only. If you're moving from another phone, import your backup here.",
+  lastBackup:x=>`Last backup: ${x.d}${x.dias>30?` (${x.dias} days ago). Time for a new one.`:"."}`,
+  noBackup:"You haven't made a backup yet. Your data is only on this device: if you lose it, you lose your budget.",
+  shareTitle:"Household Budget backup", shared:"Backup shared. Keep it somewhere safe (Files, Drive or email).", downloaded:"File <b>{f}</b> saved to your downloads.",
+  pastePh:"Paste the backup text here", readBackup:"Read backup", notBackup:"This file isn't a Household Budget backup. Choose the .json file you exported.",
+  backupOf:x=>`Backup from ${x.d}, with ${x.n} ${x.n===1?"month":"months"}.`, willReplace:" The data currently in this app will be replaced.",
+  replace:"Replace with backup", importBtn:"Import", importFail:"Couldn't import: the device storage may be full.",
+  installPrompt:"<b>Install the app</b> to open it like any other, even offline.",
+  installIOS:"<b>Install the app:</b> in Safari, tap Share and then <b>Add to Home Screen</b>. Import your backup <b>inside the installed app</b>: on iPhone, Safari and the app keep their data separately.",
+  installOther:"<b>Install the app:</b> in the browser menu (⋮), choose <b>Install app</b> or <b>Add to Home screen</b>.",
+  demoBanner:"You're viewing <b>sample data</b>. Nothing you change is saved, and your own data is untouched.", exitDemo:"Exit sample",
+  sugeridas:["Rent / mortgage","Electricity","Water","Gas","Internet, TV & phone","Groceries","Fuel","Insurance","Health","School & activities","Clothing","Savings"],
+  demo:{renda:"Rent",luz:"Electricity",net:"Internet & phone",super:"Groceries",comb:"Fuel",poup:"Savings",lojaA:"Supermarket",lojaB:"Corner shop",posto:"Petrol station",
+    seguro:"Car insurance",iuc:"Road tax",natacao:"Swimming lessons",visita:"School trip",material:"School supplies"}
+}};
+
+/* ---------- idioma ---------- */
+const PREF="contas:";
+const lerPref=k=>{try{const v=localStorage.getItem(PREF+"_"+k);return v?JSON.parse(v):null}catch(e){return null}};
+const gravarPref=(k,v)=>{try{localStorage.setItem(PREF+"_"+k,JSON.stringify(v))}catch(e){}};
+const hashDemo=location.hash.match(/^#demo(?:-(pt|en))?$/);
+const DEMO=!!hashDemo;
+let LANG=(hashDemo&&hashDemo[1])||lerPref("lang")||((navigator.language||"").toLowerCase().startsWith("pt")?"pt":"en");
+let LOC, eur, dec, MESES, diaMes;
+function prepararIdioma(){
+  LOC=LANG==="en"?"en-IE":"pt-PT";
+  eur=new Intl.NumberFormat(LOC,{style:"currency",currency:"EUR"});
+  dec=new Intl.NumberFormat(LOC,{minimumFractionDigits:2,maximumFractionDigits:2});
+  const fm=new Intl.DateTimeFormat(LOC,{month:"long"});
+  MESES=Array.from({length:12},(_,k)=>fm.format(new Date(2026,k,15)));
+  diaMes=new Intl.DateTimeFormat(LOC,{day:"2-digit",month:"2-digit"});
+}
+prepararIdioma();
+const t=(k,v={})=>{const s=TXT[LANG][k]??TXT.pt[k]??k;return typeof s==="function"?s(v):typeof s==="string"?s.replace(/\{(\w+)\}/g,(_,x)=>v[x]??""):s};
+function aplicarTextos(){
+  document.documentElement.lang=LANG==="en"?"en":"pt-PT";
+  document.title=t("appTitle");
+  document.querySelectorAll("[data-i18n]").forEach(el=>el.textContent=t(el.dataset.i18n));
+  document.querySelectorAll("[data-i18n-html]").forEach(el=>el.innerHTML=t(el.dataset.i18nHtml));
+  document.querySelectorAll("[data-i18n-ph]").forEach(el=>el.placeholder=t(el.dataset.i18nPh));
+  document.querySelectorAll("[data-i18n-aria]").forEach(el=>el.setAttribute("aria-label",t(el.dataset.i18nAria)));
+  document.querySelectorAll("[data-lang]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.lang===LANG)));
+  const jm=$("jMes").value; $("jMes").innerHTML=MESES.map((m,k)=>`<option value="${k+1}">${cap(m)}</option>`).join(""); if(jm)$("jMes").value=jm;
+  const jo=$("jModo").value||"mensal"; $("jModo").innerHTML=["mensal","ferias","natal","ambos"].map(m=>`<option value="${m}">${t("opt_"+m)}</option>`).join(""); $("jModo").value=jo;
+  ["addValor","jTotal","jInicial"].forEach(id=>$(id).placeholder=dec.format(0));
+  atualizarJarForm();
+}
+
+/* ---------- utilitários ---------- */
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const parse1=s=>{if(s.includes(",")) s=s.replace(/\./g,"").replace(",",".");const n=Number(s);return s&&isFinite(n)?n:null};
+// lê um número escrito à portuguesa (1.234,56) ou à inglesa (1,234.56); aceita somas como "1108,09 + 53,03"
+const parse1=s=>{if(LANG==="en")s=s.replace(/,/g,"");else if(s.includes(","))s=s.replace(/\./g,"").replace(",",".");const n=Number(s);return s&&isFinite(n)?n:null};
 const parse=v=>{if(v==null)return null;const s=String(v).replace(/\s|€/g,"");if(!s)return null;
-  const partes=s.split("+").map(parse1);if(partes.some(x=>x==null))return null;return Math.round(partes.reduce((a,b)=>a+b,0)*100)/100}; // aceita "1108,09 + 53,03"
+  const partes=s.split("+").map(parse1);if(partes.some(x=>x==null))return null;return Math.round(partes.reduce((a,b)=>a+b,0)*100)/100};
 const r2=n=>Math.round(n*100)/100;
 const novoId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const cap=s=>s.replace(/^./,c=>c.toUpperCase());
 const nomeMes=ch=>{const [a,m]=ch.split("-").map(Number);return MESES[m-1]+" "+a};
 const hoje=new Date();
-let chave=hoje.getFullYear()+"-"+String(hoje.getMonth()+1).padStart(2,"0");
+const chaveDe=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+let chave=chaveDe(hoje);
 // mês das contas: o dinheiro recebido num mês paga as contas do mês seguinte
-function mesDasContas(dia){const d=new Date(hoje.getFullYear(),hoje.getMonth()+(hoje.getDate()>=dia?1:0),1);
-  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")}
+const mesDasContas=dia=>chaveDe(new Date(hoje.getFullYear(),hoje.getMonth()+(hoje.getDate()>=dia?1:0),1));
 const mesAnterior=ch=>{let [a,m]=ch.split("-").map(Number);m--;if(m<1){m=12;a--}return MESES[m-1]};
 let config={rendimento:null,despesas:[],mealheiros:[],partFixas:[]};
 let partilhadas={itens:[]};
@@ -284,25 +468,55 @@ let mes=null;
 let orcAberto=null, focarGasto=false;
 let editar=false, tipoFixa=true, paiFixa=false, jarAberto=null, jarModo=null;
 
-/* ---------- guardar: tudo fica neste dispositivo (localStorage) ---------- */
-const PREF="contas:";
-function lerLocal(nome){try{const v=localStorage.getItem(PREF+nome);return v?JSON.parse(v):null}catch(e){return null}}
-async function ligar(){ try{ if(navigator.storage&&navigator.storage.persist) await navigator.storage.persist() }catch(e){} }
+/* ---------- guardar: no dispositivo (localStorage), ou só em memória no modo de exemplo ---------- */
+const MEM=new Map();
+function lerLocal(nome){
+  if(DEMO)return MEM.has(nome)?JSON.parse(MEM.get(nome)):null;
+  try{const v=localStorage.getItem(PREF+nome);return v?JSON.parse(v):null}catch(e){return null}}
+async function ligar(){ if(DEMO)return; try{ if(navigator.storage&&navigator.storage.persist) await navigator.storage.persist() }catch(e){} }
 async function ler(nome){return lerLocal(nome)}
 function guardar(nome,obj){
-  try{localStorage.setItem(PREF+nome,JSON.stringify(obj));$("estado").textContent="Guardado neste telemóvel"}
-  catch(e){$("estado").textContent="Não foi possível guardar: o espaço do telemóvel pode estar cheio. Exporta uma cópia de segurança."}
+  if(DEMO){MEM.set(nome,JSON.stringify(obj));$("estado").textContent=t("demoSaved");return}
+  try{localStorage.setItem(PREF+nome,JSON.stringify(obj));$("estado").textContent=t("saved")}
+  catch(e){$("estado").textContent=t("saveFail")}
 }
 const gravarConfig=()=>guardar("config",config);
 const gravarPai=()=>guardar("partilhadas",partilhadas);
 function gravarMes(){ const {_novo,...limpo}=mes; mes._novo=false; guardar("mes-"+chave,limpo) }
 
+/* ---------- dados de exemplo (só em memória) ---------- */
+function semearExemplo(){
+  MEM.clear();
+  const D=t("demo"), ch=mesDasContas(20), [a,m]=ch.split("-").map(Number);
+  const ant=chaveDe(new Date(a,m-2,1));
+  const dia=n=>`${chaveDe(hoje)}-${String(Math.min(n,hoje.getDate()||1)).padStart(2,"0")}`;
+  const venc=((m+3)%12)||12; // seguro paga daqui a 4 meses
+  const config={rendimento:1250,diaRecebe:20,despesas:[
+      {id:"d1",nome:D.renda,previsto:450},{id:"d2",nome:D.luz,previsto:38},{id:"d3",nome:D.net,previsto:32.99},
+      {id:"d4",nome:D.super,previsto:220,orc:true},{id:"d5",nome:D.comb,previsto:90,orc:true},{id:"d6",nome:D.poup,previsto:75}],
+    mealheiros:[
+      {id:"j1",nome:D.seguro,total:312,mesVence:venc,modo:"mensal",mensal:26,inicial:234,desde:ant,mov:{},pagamentos:[]},
+      {id:"j2",nome:D.iuc,total:148,mesVence:8,modo:"ferias",mensal:148,inicial:0,desde:ant,mov:{},pagamentos:[]}],
+    partFixas:[{id:"f1",nome:D.natacao,previsto:24,desde:ant,valores:{}}]};
+  const partilhadas={itens:[
+    {id:"s1",fixa:"f1",mes:ch,descricao:D.natacao,valor:24,estado:0,mesRecebido:null},
+    {id:"s2",mes:ch,descricao:D.visita,valor:18.5,estado:0,mesRecebido:null},
+    {id:"s3",mes:ant,descricao:D.material,valor:31.4,estado:1,mesRecebido:null}]};
+  const mesEx={rendimento:1250,itens:[
+    {id:"d1",nome:D.renda,previsto:450,valor:null,pago:true,extra:false},
+    {id:"d2",nome:D.luz,previsto:38,valor:41.27,pago:true,extra:false},
+    {id:"d3",nome:D.net,previsto:32.99,valor:null,pago:false,extra:false},
+    {id:"d4",nome:D.super,previsto:220,valor:null,pago:false,extra:false,orc:true,gastos:[
+      {id:"g1",valor:63.4,desc:D.lojaA,dia:dia(2)},{id:"g2",valor:28.15,desc:D.lojaB,dia:dia(5)}]},
+    {id:"d5",nome:D.comb,previsto:90,valor:null,pago:false,extra:false,orc:true,gastos:[{id:"g3",valor:45,desc:D.posto,dia:dia(3)}]},
+    {id:"d6",nome:D.poup,previsto:75,valor:null,pago:false,extra:false}]};
+  MEM.set("config",JSON.stringify(config));MEM.set("partilhadas",JSON.stringify(partilhadas));MEM.set("mes-"+ch,JSON.stringify(mesEx));
+}
+
 /* ---------- mês ---------- */
 function mesDaLista(){return {rendimento:config.rendimento,itens:config.despesas.map(d=>({id:d.id,nome:d.nome,previsto:d.previsto,valor:null,pago:false,extra:false,orc:!!d.orc,gastos:[]}))}}
 async function abrirMes(){
-  $("lista").innerHTML='<div class="vazio">A abrir…</div>';
-  const [a,m]=chave.split("-").map(Number);
-  $("mesTitulo").innerHTML=esc(cap(MESES[m-1]))+"<small>"+a+"</small>";
+  $("lista").innerHTML=`<div class="vazio">${t("opening")}</div>`;
   const guardado=await ler("mes-"+chave);
   mes=guardado||mesDaLista(); mes._novo=!guardado;
   desenhar();
@@ -312,23 +526,24 @@ function mudarMes(d){let [a,m]=chave.split("-").map(Number);m+=d;if(m<1){m=12;a-
 
 /* ---------- mealheiros ---------- */
 const SUBS={ferias:7,natal:12}; // mês das contas em que o subsídio entra (recebido no mês anterior)
-const MODOS={mensal:"por mês",ferias:"no subsídio de férias",natal:"no subsídio de Natal",ambos:"em cada subsídio"};
 const jarModo_=j=>j.modo||"mensal";
+const modoTxt=m=>t("mode_"+m);
 const reforcos=j=>{const m=jarModo_(j);return m==="mensal"?[1,2,3,4,5,6,7,8,9,10,11,12]:m==="ambos"?[SUBS.ferias,SUBS.natal]:[SUBS[m]]};
 const valorPadrao=(total,modo)=>r2(modo==="mensal"?total/12:modo==="ambos"?total/2:total);
 const mesNum=()=>Number(chave.split("-")[1]);
-const jarsAtivos=()=>config.mealheiros.filter(j=>j.desde<=chave&&(reforcos(j).includes(mesNum())||jarMov(j)[chave]));
 const jarMov=j=>(j.mov=j.mov||{});
+const jarsAtivos=()=>config.mealheiros.filter(j=>j.desde<=chave&&(reforcos(j).includes(mesNum())||jarMov(j)[chave]));
 function jarSaldo(j){let s=j.inicial||0;for(const k in jarMov(j)){const x=j.mov[k];if(x.feito)s+=x.valor}
   for(const p of (j.pagamentos||[]))s-=p.valor;return r2(s)}
 const jarValorMes=j=>{const x=jarMov(j)[chave];return x&&x.valor!=null?x.valor:j.mensal};
 const jarFeito=j=>!!(jarMov(j)[chave]&&jarMov(j)[chave].feito);
-function jarMesesAte(j){const m=Number(chave.split("-")[1]);return (j.mesVence-m+12)%12} // 0 = paga este mês
+const jarMesesAte=j=>(j.mesVence-mesNum()+12)%12; // 0 = paga este mês
 const jarPagoAgora=j=>(j.pagamentos||[]).some(p=>p.mes===chave);
 
 /* ---------- a pedir ao pai ---------- */
 const paiVisiveis=()=>partilhadas.itens.filter(i=>i.estado<2||i.mesRecebido===chave||i.mes===chave).sort((a,b)=>a.mes<b.mes?-1:1);
 const metade=i=>r2(i.valor/2);
+const porReceberTotal=()=>r2(partilhadas.itens.filter(i=>i.estado<2).reduce((s,i)=>s+i.valor,0)/2);
 
 /* ---------- contas ---------- */
 const planoDe=i=>i.valor!=null?i.valor:(i.previsto||0);
@@ -341,37 +556,38 @@ function contas(){
   const js=jarsAtivos(); const jT=js.reduce((s,j)=>s+jarValorMes(j),0), jP=js.filter(jarFeito).reduce((s,j)=>s+jarValorMes(j),0);
   const doMes=partilhadas.itens.filter(i=>i.mes===chave);
   const pTotal=doMes.reduce((s,i)=>s+i.valor,0), pM=doMes.reduce((s,i)=>s+(i.valor-metade(i)),0); // pM = a tua parte
-  const recebido=0;
-  const porReceber=r2(partilhadas.itens.filter(i=>i.estado<2).reduce((s,i)=>s+i.valor,0)/2);
-  return {cT,cP,jT,jP,pM,pTotal,recebido,porReceber,total:cT+jT+pM,pago:cP+jP+pM}
+  return {cT,cP,jT,jP,pM,pTotal,porReceber:porReceberTotal(),total:cT+jT+pM,pago:cP+jP+pM}
 }
 
 /* ---------- desenhar ---------- */
-function desenhar(){desenharResumo();desenharLista();desenharJars();desenharPai();
-  $("modo").textContent=editar?"Concluir":"Editar lista";$("modo").hidden=!mes.itens.length&&!editar}
+function desenhar(){
+  const [a,m]=chave.split("-").map(Number);
+  $("mesTitulo").innerHTML=esc(cap(MESES[m-1]))+"<small>"+a+"</small>";
+  desenharResumo();desenharLista();desenharJars();desenharPai();
+  $("modo").textContent=editar?t("done"):t("editList");$("modo").hidden=!mes.itens.length&&!editar}
 
 function desenharResumo(){
   if(document.activeElement&&document.activeElement.id==="rend")return;
   const r=mes.rendimento, c=contas();
-  const entradas=(r||0)+c.recebido, sobra=entradas-c.total, falta=c.total-c.pago;
-  const base=Math.max(entradas,c.total)||1;
+  const sobra=(r||0)-c.total, falta=c.total-c.pago;
+  const base=Math.max(r||0,c.total)||1;
   $("resumo").innerHTML=`
-    <div><label class="lbl" for="rend">Recebi em ${mesAnterior(chave)}</label>
-      <div class="campo-eur"><input id="rend" inputmode="decimal" placeholder="ex.: 1108,09 + 53,03" value="${r!=null?dec.format(r):""}"><span>€</span></div>
-      <div class="sub" style="margin-top:6px">Para as contas de ${MESES[mesNum()-1]} · recebo por volta do dia
-        <select id="dia" class="campo" style="width:auto;padding:2px 6px" aria-label="Dia em que recebes">${Array.from({length:28},(_,k)=>`<option ${k+1===(config.diaRecebe||20)?"selected":""}>${k+1}</option>`).join("")}</select></div></div>
-    <div class="sobra"><span class="k">${r==null?"Indica o que recebeste para ver o que sobra":(sobra>=0?"Sobra para poupar":"Falta para cobrir as contas")}</span>
+    <div><label class="lbl" for="rend">${t("receivedIn",{mes:mesAnterior(chave)})}</label>
+      <div class="campo-eur"><input id="rend" inputmode="decimal" placeholder="${t("incomePh")}" value="${r!=null?dec.format(r):""}"><span>€</span></div>
+      <div class="sub" style="margin-top:6px">${t("forBillsOf",{mes:MESES[mesNum()-1]})}
+        <select id="dia" class="campo" style="width:auto;padding:2px 6px" aria-label="${t("payday")}">${Array.from({length:28},(_,k)=>`<option ${k+1===(config.diaRecebe||20)?"selected":""}>${k+1}</option>`).join("")}</select></div></div>
+    <div class="sobra"><span class="k">${r==null?t("enterIncome"):(sobra>=0?t("leftToSave"):t("shortfall"))}</span>
       <span class="v ${r==null?"":(sobra>=0?"pos":"neg")}">${r==null?"—":eur.format(Math.abs(sobra))}</span></div>
     <div class="barra" aria-hidden="true"><i class="p" style="width:${(c.cP+c.pM)/base*100}%"></i><i class="j" style="width:${c.jP/base*100}%"></i><i class="f" style="width:${falta/base*100}%"></i></div>
     <div class="legenda">
-      <div><span class="k"><i style="background:var(--ok)"></i>Já pago</span><span class="v num">${eur.format(c.cP+c.pM)}</span></div>
-      <div><span class="k"><i style="background:var(--jar)"></i>Posto de parte</span><span class="v num">${eur.format(c.jP)}</span></div>
-      <div><span class="k"><i style="background:var(--pen);opacity:.45"></i>Por pagar / gastar</span><span class="v num">${eur.format(falta)}</span></div>
+      <div><span class="k"><i style="background:var(--ok)"></i>${t("paid")}</span><span class="v num">${eur.format(c.cP+c.pM)}</span></div>
+      <div><span class="k"><i style="background:var(--jar)"></i>${t("setAside")}</span><span class="v num">${eur.format(c.jP)}</span></div>
+      <div><span class="k"><i style="background:var(--pen);opacity:.45"></i>${t("toPay")}</span><span class="v num">${eur.format(falta)}</span></div>
     </div>
     <div class="extra">
-      <div><span>Total das tuas despesas este mês</span><b>${eur.format(c.total)}</b></div>
-      ${c.pTotal?`<div><span>Despesas do filho: total ${eur.format(c.pTotal)}</span><b>a tua parte ${eur.format(c.pM)}</b></div>`:""}
-      ${c.porReceber?`<div><span>Ainda por receber do pai</span><b>${eur.format(c.porReceber)}</b></div>`:""}</div>`;
+      <div><span>${t("totalMonth")}</span><b>${eur.format(c.total)}</b></div>
+      ${c.pTotal?`<div><span>${t("childTotal",{t:eur.format(c.pTotal)})}</span><b>${t("yourShare",{v:eur.format(c.pM)})}</b></div>`:""}
+      ${c.porReceber?`<div><span>${t("owed")}</span><b>${eur.format(c.porReceber)}</b></div>`:""}</div>`;
   $("rend").addEventListener("change",e=>{const v=parse(e.target.value);mes.rendimento=v;gravarMes();
     if(v!=null){config.rendimento=v;gravarConfig()}e.target.blur();desenharResumo()});
   $("dia").onchange=e=>{config.diaRecebe=Number(e.target.value);gravarConfig()};
@@ -382,25 +598,26 @@ const CHECK='<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 function desenharLista(){
   const L=$("lista"), js=jarsAtivos();
   if(!mes.itens.length&&!js.length&&!editar){
-    L.innerHTML=`<div class="vazio"><strong>Ainda sem contas neste caderno</strong>
-      Adiciona em baixo as tuas despesas fixas, ou começa com uma lista sugerida e depois põe os teus valores.
-      <div><button class="btn sec" id="sug">Usar uma lista sugerida</button></div></div>`;
+    L.innerHTML=`<div class="vazio"><strong>${t("emptyTitle")}</strong>
+      ${t("emptyText")}
+      <div class="acoes"><button class="btn sec" id="sug">${t("useSuggested")}</button>${DEMO?"":`<button class="link" id="sugDemo">${t("trySample")}</button>`}</div></div>`;
     $("sug").onclick=()=>{juntarCaderno();editar=true;desenhar()};
+    if($("sugDemo"))$("sugDemo").onclick=entrarDemo;
     return;
   }
   if(editar){
-    const n=mes.itens.length, faltam=SUGERIDAS.filter(x=>!config.despesas.some(d=>d.nome.toLowerCase()===x.toLowerCase())).length;
+    const n=mes.itens.length, faltam=t("sugeridas").filter(x=>!config.despesas.some(d=>d.nome.toLowerCase()===x.toLowerCase())).length;
     L.innerHTML=(mes.itens.map((i,k)=>`<div class="linha edit" data-id="${i.id}">
-      <input class="tnome" value="${esc(i.nome)}" aria-label="Nome">
+      <input class="tnome" value="${esc(i.nome)}" aria-label="${t("name")}">
       <div class="ctrl">
-        <div class="valor"><input class="tprev" inputmode="decimal" value="${dec.format(i.previsto||0)}" aria-label="Valor habitual de ${esc(i.nome)}"><span>€</span></div>
-        <button class="mini" data-m="-1" ${k===0?"disabled":""} aria-label="Subir ${esc(i.nome)}">↑</button>
-        <button class="mini" data-m="1" ${k===n-1?"disabled":""} aria-label="Descer ${esc(i.nome)}">↓</button>
-        <button class="mini" data-orc aria-pressed="${!!i.orc}" title="Vou gastando aos poucos">Aos poucos</button>
-        ${i.extra?"":`<button class="mini jar" data-c="jar">Mealheiro</button><button class="mini pai" data-c="pai">Dividir</button>`}
-        <button class="mini del" aria-label="Apagar ${esc(i.nome)}">✕</button></div></div>`).join("")||'<div class="vazio">Sem contas fixas.</div>')
-      +`<div class="vazio" style="padding:12px 16px"><span class="nota">Usa ↑ ↓ para arrumar a lista e juntar as despesas parecidas. <b>Mealheiro</b> passa a despesa para os mealheiros anuais; <b>Dividir</b> passa-a para as despesas a pedir ao pai. <b>Aos poucos</b> serve para despesas que pagas em várias vezes (supermercado, saúde): o valor passa a ser o teu orçamento e vais registando cada gasto. Os valores habituais valem para este mês e para os seguintes.</span>
-        ${faltam?`<div><button class="btn sec sm" id="sug2">Juntar a lista sugerida (${faltam} em falta)</button></div>`:""}</div>`;
+        <div class="valor"><input class="tprev" inputmode="decimal" value="${dec.format(i.previsto||0)}" aria-label="${esc(t("usualOf",{n:i.nome}))}"><span>€</span></div>
+        <button class="mini" data-m="-1" ${k===0?"disabled":""} aria-label="${esc(t("moveUp",{n:i.nome}))}">↑</button>
+        <button class="mini" data-m="1" ${k===n-1?"disabled":""} aria-label="${esc(t("moveDown",{n:i.nome}))}">↓</button>
+        <button class="mini" data-orc aria-pressed="${!!i.orc}" title="${t("bitByBitTitle")}">${t("bitByBit")}</button>
+        ${i.extra?"":`<button class="mini jar" data-c="jar">${t("toJar")}</button><button class="mini pai" data-c="pai">${t("split")}</button>`}
+        <button class="mini del" aria-label="${esc(t("deleteX",{n:i.nome}))}">✕</button></div></div>`).join("")||`<div class="vazio">${t("noFixed")}</div>`)
+      +`<div class="vazio" style="padding:12px 16px"><span class="nota">${t("editHelp")}</span>
+        ${faltam?`<div><button class="btn sec sm" id="sug2">${t("addSuggested",{n:faltam})}</button></div>`:""}</div>`;
     if($("sug2"))$("sug2").onclick=()=>{juntarCaderno();desenhar()};
     L.querySelectorAll(".linha").forEach(row=>{
       const id=row.dataset.id,it=mes.itens.find(x=>x.id===id),fx=config.despesas.find(x=>x.id===id);
@@ -411,7 +628,7 @@ function desenharLista(){
       row.querySelector("[data-orc]").onclick=()=>{it.orc=!it.orc;it.gastos=it.gastos||[];
         if(!it.orc&&it.gastos.length){it.valor=gastoDe(it);it.pago=true}
         if(fx){fx.orc=it.orc;gravarConfig()}gravarMes();desenharLista();desenharResumo()};
-      row.querySelector(".del").onclick=()=>confirmar(row,`Apagar “${esc(it.nome)}”${fx?" deste mês e dos seguintes":""}?`,()=>{
+      row.querySelector(".del").onclick=()=>confirmar(row,t("confirmDel",{n:esc(it.nome),resto:fx?t("fromNowOn"):""}),()=>{
         removerConta(it.id,true);desenhar()},desenharLista);
     });
     return;
@@ -420,32 +637,32 @@ function desenharLista(){
     if(i.orc){const pl=planoDe(i),g=gastoDe(i),r=r2(pl-g),ab=orcAberto===i.id;
       const pct=pl>0?Math.min(100,g/pl*100):(g>0?100:0);
       return `<div class="linha ${ab?"aberta":""}" data-orc="${i.id}">
-        <button class="visto orc" aria-label="Registar gasto em ${esc(i.nome)}" aria-expanded="${ab}">+</button>
+        <button class="visto orc" aria-label="${esc(t("logSpendOn",{n:i.nome}))}" aria-expanded="${ab}">+</button>
         <div style="min-width:0" data-abrir><div class="nome">${esc(i.nome)}</div>
-          <div class="sub">gasto ${eur.format(g)} de ${eur.format(pl)}${i.extra?' <span class="tag">só este mês</span>':""}</div>
+          <div class="sub">${t("spentOf",{g:eur.format(g),p:eur.format(pl)})}${i.extra?` <span class="tag">${t("onlyTag")}</span>`:""}</div>
           <div class="mbarra" aria-hidden="true"><i class="${r<0?"exc":""}" style="width:${pct}%"></i></div></div>
-        <div class="resta ${r<0?"exc":""}" data-abrir><b>${eur.format(Math.abs(r))}</b><small>${r<0?"acima do previsto":"ainda disponível"}</small></div></div>`
+        <div class="resta ${r<0?"exc":""}" data-abrir><b>${eur.format(Math.abs(r))}</b><small>${r<0?t("overBudget"):t("available")}</small></div></div>`
         +(ab?`<div class="painel" data-painel="${i.id}">
           <form class="gform" autocomplete="off">
-            <div class="valor"><input id="gV" inputmode="decimal" placeholder="0,00" aria-label="Valor gasto"><span>€</span></div>
-            <input id="gD" class="campo" placeholder="Nota (opcional), ex.: Continente">
-            <button class="btn sm" type="submit">Registar</button></form>
-          ${(i.gastos||[]).length?(i.gastos||[]).map(x=>`<div class="gasto" data-g="${x.id}"><span class="q">${x.dia?x.dia.slice(8,10)+"/"+x.dia.slice(5,7):""}</span><span class="d">${esc(x.desc||"")}</span><b>${eur.format(x.valor)}</b><button type="button" aria-label="Apagar gasto de ${eur.format(x.valor)}">✕</button></div>`).join(""):'<span class="nota">Ainda sem gastos este mês.</span>'}
-          <div class="plano"><span>Previsto para este mês</span><div class="valor"><input id="gP" inputmode="decimal" value="${dec.format(pl)}" aria-label="Previsto para ${esc(i.nome)} este mês"><span>€</span></div></div>
+            <div class="valor"><input id="gV" inputmode="decimal" placeholder="${dec.format(0)}" aria-label="${t("spentAria")}"><span>€</span></div>
+            <input id="gD" class="campo" placeholder="${t("notePh")}">
+            <button class="btn sm" type="submit">${t("log")}</button></form>
+          ${(i.gastos||[]).length?(i.gastos||[]).map(x=>`<div class="gasto" data-g="${x.id}"><span class="q">${x.dia?diaMes.format(new Date(x.dia+"T12:00")):""}</span><span class="d">${esc(x.desc||"")}</span><b>${eur.format(x.valor)}</b><button type="button" aria-label="${t("deleteSpend",{v:eur.format(x.valor)})}">✕</button></div>`).join(""):`<span class="nota">${t("noSpend")}</span>`}
+          <div class="plano"><span>${t("planned")}</span><div class="valor"><input id="gP" inputmode="decimal" value="${dec.format(pl)}" aria-label="${esc(t("plannedFor",{n:i.nome}))}"><span>€</span></div></div>
         </div>`:"")}
     const dif=i.valor!=null&&i.valor!==i.previsto;
     return `<div class="linha ${i.pago?"paga":""}" data-id="${i.id}">
-      <button class="visto" role="checkbox" aria-checked="${i.pago}" aria-label="${esc(i.nome)} paga">${CHECK}</button>
+      <button class="visto" role="checkbox" aria-checked="${i.pago}" aria-label="${esc(t("paidAria",{n:i.nome}))}">${CHECK}</button>
       <div style="min-width:0"><div class="nome">${esc(i.nome)}</div>
-        <div class="sub">${i.extra?'<span class="tag">só este mês</span>':""}${dif?`<span class="tag dif">habitual ${eur.format(i.previsto||0)}</span>`:""}</div></div>
-      <div class="valor"><input inputmode="decimal" value="${dec.format(valorDe(i))}" aria-label="Valor de ${esc(i.nome)} este mês"><span>€</span></div></div>`}).join("");
+        <div class="sub">${i.extra?`<span class="tag">${t("onlyTag")}</span>`:""}${dif?`<span class="tag dif">${t("usualTag",{v:eur.format(i.previsto||0)})}</span>`:""}</div></div>
+      <div class="valor"><input inputmode="decimal" value="${dec.format(valorDe(i))}" aria-label="${esc(t("valueThisMonth",{n:i.nome}))}"><span>€</span></div></div>`}).join("");
   if(js.length){
-    h+=`<div class="sep">Pôr de parte nos mealheiros</div>`+js.map(j=>{const f=jarFeito(j);
+    h+=`<div class="sep">${t("setAsideSep")}</div>`+js.map(j=>{const f=jarFeito(j);
       return `<div class="linha ${f?"paga":""}" data-jar="${j.id}">
-        <button class="visto jar" role="checkbox" aria-checked="${f}" aria-label="${esc(j.nome)} posto de parte">${CHECK}</button>
+        <button class="visto jar" role="checkbox" aria-checked="${f}" aria-label="${esc(t("setAsideAria",{n:j.nome}))}">${CHECK}</button>
         <div style="min-width:0"><div class="nome">${esc(j.nome)}</div>
-          <div class="sub"><span class="tag jar">guardado ${eur.format(jarSaldo(j))}</span></div></div>
-        <div class="valor"><input inputmode="decimal" value="${dec.format(jarValorMes(j))}" aria-label="Valor a pôr de parte para ${esc(j.nome)}"><span>€</span></div></div>`}).join("");
+          <div class="sub"><span class="tag jar">${t("savedTag",{v:eur.format(jarSaldo(j))})}</span></div></div>
+        <div class="valor"><input inputmode="decimal" value="${dec.format(jarValorMes(j))}" aria-label="${esc(t("setAsideFor",{n:j.nome}))}"><span>€</span></div></div>`}).join("");
   }
   L.innerHTML=h;
   L.querySelectorAll(".linha[data-orc]").forEach(row=>{
@@ -456,7 +673,7 @@ function desenharLista(){
   const P=L.querySelector(".painel");
   if(P){const it=mes.itens.find(x=>x.id===P.dataset.painel);it.gastos=it.gastos||[];
     P.querySelector("form").onsubmit=e=>{e.preventDefault();const v=parse($("gV").value);if(!v)return;
-      const d=new Date(),dia=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+      const d=new Date(),dia=chaveDe(d)+"-"+String(d.getDate()).padStart(2,"0");
       it.gastos.push({id:novoId(),valor:v,desc:$("gD").value.trim(),dia});gravarMes();focarGasto=true;desenhar()};
     P.querySelectorAll(".gasto").forEach(el=>el.querySelector("button").onclick=()=>{it.gastos=it.gastos.filter(x=>x.id!==el.dataset.g);gravarMes();desenhar()});
     ligarValor($("gP"),v=>{it.valor=(v==null||v===it.previsto)?null:v;gravarMes();desenhar()});
@@ -474,7 +691,7 @@ function desenharLista(){
   });
 }
 function juntarCaderno(){
-  SUGERIDAS.forEach(n=>{if(config.despesas.some(d=>d.nome.toLowerCase()===n.toLowerCase()))return;
+  t("sugeridas").forEach(n=>{if(config.despesas.some(d=>d.nome.toLowerCase()===n.toLowerCase()))return;
     const d={id:novoId(),nome:n,previsto:0};config.despesas.push(d);
     if(!mes.itens.some(x=>x.id===d.id))mes.itens.push({id:d.id,nome:n,previsto:0,valor:null,pago:false,extra:false})});
   gravarConfig();gravarMes()}
@@ -497,59 +714,58 @@ function iniciarConversao(tipo,it){
     $("jarForm").scrollIntoView({behavior:"smooth",block:"center"});$("jTotal").focus({preventScroll:true})}
   else{$("pFixa").click();$("pNome").value=it.nome;$("pValor").value=it.previsto?dec.format(it.previsto):"";
     $("paiForm").scrollIntoView({behavior:"smooth",block:"center"});$("pValor").focus({preventScroll:true})}
-  $("estado").textContent=tipo==="jar"?"Confirma o valor anual e o mês em que pagas, depois carrega em Criar mealheiro.":"Confirma o valor total (as duas metades) e carrega em Adicionar.";
+  $("estado").textContent=tipo==="jar"?t("convJar"):t("convPai");
 }
 function ligarValor(inp,fn){inp.onfocus=()=>inp.select();inp.onkeydown=e=>{if(e.key==="Enter")inp.blur()};inp.onchange=()=>fn(parse(inp.value))}
-function confirmar(row,texto,sim,nao){
+function confirmar(row,texto,sim,nao,rotulo){
   row.style.gridTemplateColumns="minmax(0,1fr) auto";
-  row.innerHTML=`<div class="nome">${texto}</div><div style="display:flex;gap:6px"><button class="btn sec sm" data-a="n">Não</button><button class="btn sm" data-a="s" style="background:var(--warn)">Apagar</button></div>`;
+  row.innerHTML=`<div class="nome">${texto}</div><div style="display:flex;gap:6px"><button class="btn sec sm" data-a="n">${t("no")}</button><button class="btn sm" data-a="s" style="background:var(--warn)">${rotulo||t("del")}</button></div>`;
   row.querySelector('[data-a="n"]').onclick=nao;row.querySelector('[data-a="s"]').onclick=sim;
 }
 
 function desenharJars(){
   const B=$("jars"), js=config.mealheiros;
-  if(!js.length){B.innerHTML=`<div class="lista"><div class="vazio"><strong>Nenhum mealheiro ainda</strong>
-    Cria um por cada despesa anual (seguro do carro, IUC, revisão, matrículas…). Cada mês dás o visto quando pões o valor de parte e vês quanto já tens para cada uma.</div></div>`;return}
+  if(!js.length){B.innerHTML=`<div class="lista"><div class="vazio"><strong>${t("noJarsTitle")}</strong>${t("noJarsText")}</div></div>`;return}
   B.innerHTML=js.map(j=>{
     const s=jarSaldo(j), n=jarMesesAte(j), falta=r2(j.total-s), pct=Math.max(0,Math.min(100,s/(j.total||1)*100));
     const restam=(n===0?12:n)-(jarFeito(j)?1:0);
     // reforços ainda por fazer antes de pagar
     const janela=n===0?12:n, m0=mesNum(); let previsto=0, nRef=0;
     for(let k=0;k<janela;k++){const mm=((m0-1+k)%12)+1; if(!reforcos(j).includes(mm))continue; if(k===0&&jarFeito(j))continue; previsto+=k===0?jarValorMes(j):j.mensal; nRef++}
-    const modo=jarModo_(j);
+    const modo=jarModo_(j), mv=MESES[j.mesVence-1];
     let dica;
-    if(n===0&&!jarPagoAgora(j)) dica=s>=j.total?`<div class="dica">Paga este mês. Tens o suficiente: sobram ${eur.format(s-j.total)}.</div>`:`<div class="dica aviso">Paga este mês e faltam ${eur.format(falta)}.</div>`;
-    else if(falta<=0) dica=`<div class="dica">Já tens o valor completo.</div>`;
+    if(n===0&&!jarPagoAgora(j)) dica=s>=j.total?`<div class="dica">${t("dueNowOk",{v:eur.format(s-j.total)})}</div>`:`<div class="dica aviso">${t("dueNowShort",{v:eur.format(falta)})}</div>`;
+    else if(falta<=0) dica=`<div class="dica">${t("full")}</div>`;
     else if(modo!=="mensal"){
-      dica=previsto>=falta-0.005?`<div class="dica">Com ${nRef===1?"o próximo subsídio":"os próximos subsídios"} (${eur.format(previsto)}) chegas a tempo.</div>`
-        :`<div class="dica aviso">${nRef?`Mesmo com ${eur.format(previsto)} dos subsídios, faltam`:"Não recebes subsídio antes de pagar. Faltam"} ${eur.format(r2(falta-previsto))} até ${MESES[j.mesVence-1]}.</div>`}
+      dica=previsto>=falta-0.005?`<div class="dica">${t("bonusOk",{n:nRef,v:eur.format(previsto)})}</div>`
+        :`<div class="dica aviso">${t("bonusShort",{n:nRef,v:eur.format(previsto),f:eur.format(r2(falta-previsto)),m:mv})}</div>`}
     else {const porMes=restam>0?r2(falta/restam):falta; const chega=restam>0&&porMes<=j.mensal+0.005;
-      dica=chega?`<div class="dica">Com ${eur.format(j.mensal)} por mês chegas a tempo.</div>`
-        :`<div class="dica aviso">Para chegar a ${MESES[j.mesVence-1]} precisas de ${eur.format(porMes)} por mês${restam>0?` (${restam} ${restam===1?"mês":"meses"})`:""}.</div>`}
+      dica=chega?`<div class="dica">${t("monthlyOk",{v:eur.format(j.mensal)})}</div>`
+        :`<div class="dica aviso">${t("monthlyShort",{m:mv,v:eur.format(porMes),r:restam})}</div>`}
     const ult=(j.pagamentos||[]).slice(-1)[0];
     let extra="";
-    if(jarAberto===j.id&&jarModo==="pagar") extra=`<div class="grade"><label class="todo">Valor que pagaste<span class="valor"><input id="pgV" inputmode="decimal" value="${dec.format(j.total)}"><span>€</span></span></label></div>
-      <div class="acoes"><button class="btn jar sm" data-a="pg">Registar pagamento em ${nomeMes(chave)}</button><button class="btn sec sm" data-a="x">Cancelar</button></div>`;
+    if(jarAberto===j.id&&jarModo==="pagar") extra=`<div class="grade"><label class="todo">${t("amountPaid")}<span class="valor"><input id="pgV" inputmode="decimal" value="${dec.format(j.total)}"><span>€</span></span></label></div>
+      <div class="acoes"><button class="btn jar sm" data-a="pg">${t("logPayment",{m:nomeMes(chave)})}</button><button class="btn sec sm" data-a="x">${t("cancel")}</button></div>`;
     if(jarAberto===j.id&&jarModo==="editar") extra=`<div class="grade">
-      <label class="todo">Nome<input class="campo" id="eN" value="${esc(j.nome)}"></label>
-      <label>Valor anual<span class="valor"><input id="eT" inputmode="decimal" value="${dec.format(j.total)}"><span>€</span></span></label>
-      <label>Pago em<select class="campo" id="eM">${MESES.map((m,k)=>`<option value="${k+1}" ${k+1===j.mesVence?"selected":""}>${cap(m)}</option>`).join("")}</select></label>
-      <label class="todo">Como juntas<select class="campo" id="eModo"><option value="mensal" ${modo==="mensal"?"selected":""}>Todos os meses</option><option value="ferias" ${modo==="ferias"?"selected":""}>Subsídio de férias (recebido em junho)</option><option value="natal" ${modo==="natal"?"selected":""}>Subsídio de Natal (recebido em novembro)</option><option value="ambos" ${modo==="ambos"?"selected":""}>Metade em cada subsídio</option></select></label>
-      <label>Valor ${MODOS[modo]}<span class="valor"><input id="eP" inputmode="decimal" value="${dec.format(j.mensal)}"><span>€</span></span></label>
-      <label>Saldo inicial<span class="valor"><input id="eI" inputmode="decimal" value="${dec.format(j.inicial||0)}"><span>€</span></span></label></div>
-      <div class="acoes"><button class="btn jar sm" data-a="ok">Guardar</button><button class="btn sec sm" data-a="x">Cancelar</button><button class="btn sm" data-a="del" style="background:var(--warn);margin-left:auto">Apagar</button></div>`;
-    if(jarAberto===j.id&&jarModo==="apagar") extra=`<div class="dica aviso">Apagar o mealheiro “${esc(j.nome)}” e todo o seu histórico?</div>
-      <div class="acoes"><button class="btn sec sm" data-a="x">Não</button><button class="btn sm" data-a="del2" style="background:var(--warn)">Apagar</button></div>`;
+      <label class="todo">${t("name")}<input class="campo" id="eN" value="${esc(j.nome)}"></label>
+      <label>${t("jTotal")}<span class="valor"><input id="eT" inputmode="decimal" value="${dec.format(j.total)}"><span>€</span></span></label>
+      <label>${t("jDue")}<select class="campo" id="eM">${MESES.map((m,k)=>`<option value="${k+1}" ${k+1===j.mesVence?"selected":""}>${cap(m)}</option>`).join("")}</select></label>
+      <label class="todo">${t("jHowEdit")}<select class="campo" id="eModo">${["mensal","ferias","natal","ambos"].map(m=>`<option value="${m}" ${modo===m?"selected":""}>${t("opt_"+m)}</option>`).join("")}</select></label>
+      <label>${t("monthlyValue",{modo:modoTxt(modo)})}<span class="valor"><input id="eP" inputmode="decimal" value="${dec.format(j.mensal)}"><span>€</span></span></label>
+      <label>${t("startBalance")}<span class="valor"><input id="eI" inputmode="decimal" value="${dec.format(j.inicial||0)}"><span>€</span></span></label></div>
+      <div class="acoes"><button class="btn jar sm" data-a="ok">${t("save")}</button><button class="btn sec sm" data-a="x">${t("cancel")}</button><button class="btn sm" data-a="del" style="background:var(--warn);margin-left:auto">${t("del")}</button></div>`;
+    if(jarAberto===j.id&&jarModo==="apagar") extra=`<div class="dica aviso">${t("delJarQ",{n:esc(j.nome)})}</div>
+      <div class="acoes"><button class="btn sec sm" data-a="x">${t("no")}</button><button class="btn sm" data-a="del2" style="background:var(--warn)">${t("del")}</button></div>`;
     return `<article class="jarc" data-id="${j.id}">
-      <div class="t"><span class="nome">${esc(j.nome)}</span><span class="quando ${n===0?"agora":""}">${n===0?(jarPagoAgora(j)?"Paga este mês ✓":"Paga este mês"):"Paga em "+MESES[j.mesVence-1]}</span></div>
-      <div class="val"><span>Guardado <b>${eur.format(s)}</b></span><span>de ${eur.format(j.total)} · ${eur.format(j.mensal)} ${MODOS[modo]}</span></div>
+      <div class="t"><span class="nome">${esc(j.nome)}</span><span class="quando ${n===0?"agora":""}">${n===0?t("dueThisMonth")+(jarPagoAgora(j)?" ✓":""):t("dueIn",{m:mv})}</span></div>
+      <div class="val"><span>${t("savedLbl")} <b>${eur.format(s)}</b></span><span>${t("ofTotal",{t:eur.format(j.total),v:eur.format(j.mensal),modo:modoTxt(modo)})}</span></div>
       <div class="barra" aria-hidden="true"><i class="j" style="width:${pct}%"></i></div>
       ${dica}
-      ${ult?`<span class="nota">Último pagamento: ${eur.format(ult.valor)} em ${nomeMes(ult.mes)}</span>`:""}
-      ${extra||`<div class="acoes"><button class="btn sec sm" data-a="pagar">Paguei a despesa</button><button class="link" data-a="editar">Editar</button></div>`}
+      ${ult?`<span class="nota">${t("lastPayment",{v:eur.format(ult.valor),m:nomeMes(ult.mes)})}</span>`:""}
+      ${extra||`<div class="acoes"><button class="btn sec sm" data-a="pagar">${t("iPaid")}</button><button class="link" data-a="editar">${t("edit")}</button></div>`}
     </article>`}).join("");
   B.querySelectorAll(".jarc").forEach(card=>{
-    const j=config.mealheiros.find(x=>x.id===card.dataset.id);
+    const j=config.mealheiros.find(x=>x.id===card.dataset.id), modo=jarModo_(j);
     card.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{
       const a=b.dataset.a;
       if(a==="pagar"||a==="editar"){jarAberto=j.id;jarModo=a;desenharJars();return}
@@ -566,32 +782,31 @@ function desenharJars(){
 const fixasAtivas=()=>config.partFixas.filter(f=>(f.desde||"")<=chave);
 const regFixa=f=>partilhadas.itens.find(i=>i.fixa===f.id&&i.mes===chave);
 const valorFixa=f=>{const r=regFixa(f);return r?r.valor:((f.valores||{})[chave]??f.previsto)};
-const chipHTML=i=>`<button class="chip s${i.estado}" aria-label="Estado: ${ESTADOS[i.estado]}. Tocar para mudar">${ESTADOS[i.estado]}</button>`;
+const chipHTML=i=>{const e=t("estados")[i.estado];return `<button class="chip s${i.estado}" aria-label="${t("stateAria",{e})}">${e}</button>`};
 function desenharPai(){
   const P=$("pai"), fx=fixasAtivas();
   const outros=paiVisiveis().filter(i=>!(i.fixa&&i.mes===chave));
   $("copiar").hidden=!partilhadas.itens.some(i=>i.estado===0);
-  if(!fx.length&&!outros.length){P.innerHTML=`<div class="vazio">Nada por pedir. Adiciona em baixo as despesas do teu filho que são para dividir: as de todos os meses (ATL, mensalidades…) e as pontuais.</div>`;return}
-  const pend=r2(partilhadas.itens.filter(i=>i.estado<2).reduce((s,i)=>s+i.valor,0)/2);
+  if(!fx.length&&!outros.length){P.innerHTML=`<div class="vazio">${t("nothingToClaim")}</div>`;return}
   let h="";
   if(fx.length){
-    h+=`<div class="sep" style="color:var(--pen);background:var(--pen-soft)">Todos os meses</div>`+fx.map(f=>{const r=regFixa(f),v=valorFixa(f);
+    h+=`<div class="sep" style="color:var(--pen);background:var(--pen-soft)">${t("everyMonth")}</div>`+fx.map(f=>{const r=regFixa(f),v=valorFixa(f);
       return `<div class="linha ${r?"paga":""}" data-fixa="${f.id}" style="grid-template-columns:44px minmax(0,1fr) auto">
-        <button class="visto" role="checkbox" aria-checked="${!!r}" aria-label="${esc(f.nome)} paga" ${r&&r.estado>0?"disabled":""}>${CHECK}</button>
+        <button class="visto" role="checkbox" aria-checked="${!!r}" aria-label="${esc(t("paidAria",{n:f.nome}))}" ${r&&r.estado>0?"disabled":""}>${CHECK}</button>
         <div style="min-width:0"><div class="nome">${esc(f.nome)}</div>
-          <div class="sub">${r?`a pedir ${eur.format(metade(r))} ${chipHTML(r)}`:`metade ${eur.format(r2(v/2))} · dá o visto quando pagares`}</div></div>
+          <div class="sub">${r?`${t("toClaim",{v:eur.format(metade(r))})} ${chipHTML(r)}`:t("halfTick",{v:eur.format(r2(v/2))})}</div></div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-          <div class="valor"><input inputmode="decimal" value="${dec.format(v)}" aria-label="Valor total de ${esc(f.nome)}"><span>€</span></div>
-          ${r?"":`<button class="link" data-a="parar" style="padding:2px 0;font-size:12px;color:var(--muted)">Deixar de repetir</button>`}</div></div>`}).join("");
+          <div class="valor"><input inputmode="decimal" value="${dec.format(v)}" aria-label="${esc(t("totalFor",{n:f.nome}))}"><span>€</span></div>
+          ${r?"":`<button class="link" data-a="parar" style="padding:2px 0;font-size:12px;color:var(--muted)">${t("stopRepeat")}</button>`}</div></div>`}).join("");
   }
   if(outros.length){
-    h+=(fx.length?`<div class="sep" style="color:var(--pen);background:var(--pen-soft)">Pontuais e por receber</div>`:"")+outros.map(i=>`<div class="linha pai" data-id="${i.id}">
+    h+=(fx.length?`<div class="sep" style="color:var(--pen);background:var(--pen-soft)">${t("oneOffSep")}</div>`:"")+outros.map(i=>`<div class="linha pai" data-id="${i.id}">
       <div style="min-width:0"><div class="nome">${esc(i.descricao)}</div>
-        <div class="sub">${cap(nomeMes(i.mes))} · pagaste ${eur.format(i.valor)}${i.estado===2&&i.mesRecebido?` · recebido em ${nomeMes(i.mesRecebido)}`:""}</div></div>
+        <div class="sub">${cap(nomeMes(i.mes))} · ${t("youPaid",{v:eur.format(i.valor)})}${i.estado===2&&i.mesRecebido?` · ${t("receivedInM",{m:nomeMes(i.mesRecebido)})}`:""}</div></div>
       <div class="metade"><b>${eur.format(metade(i))}</b>${chipHTML(i)}</div>
-      <button class="apagar" aria-label="Apagar ${esc(i.descricao)}">✕</button></div>`).join("");
+      <button class="apagar" aria-label="${esc(t("deleteX",{n:i.descricao}))}">✕</button></div>`).join("");
   }
-  h+=`<div class="total-pai"><span>Total a receber do pai</span><b>${eur.format(pend)}</b></div>`;
+  h+=`<div class="total-pai"><span>${t("totalOwed")}</span><b>${eur.format(porReceberTotal())}</b></div>`;
   P.innerHTML=h;
   const mudarEstado=it=>{it.estado=(it.estado+1)%3;it.mesRecebido=it.estado===2?chave:null;gravarPai();desenhar()};
   P.querySelectorAll(".linha[data-fixa]").forEach(row=>{
@@ -604,23 +819,21 @@ function desenharPai(){
     ligarValor(row.querySelector("input"),v=>{v=v??f.previsto;
       if(r){r.valor=v;gravarPai()} else {(f.valores=f.valores||{})[chave]=v;gravarConfig()} desenhar()});
     const parar=row.querySelector('[data-a="parar"]');
-    if(parar) parar.onclick=()=>{row.style.gridTemplateColumns="minmax(0,1fr) auto";
-      row.innerHTML=`<div class="nome">Deixar de repetir “${esc(f.nome)}” a partir deste mês?</div><div style="display:flex;gap:6px"><button class="btn sec sm" data-a="n">Não</button><button class="btn sm" data-a="s" style="background:var(--warn)">Sim</button></div>`;
-      row.querySelector('[data-a="n"]').onclick=desenharPai;
-      row.querySelector('[data-a="s"]').onclick=()=>{config.partFixas=config.partFixas.filter(x=>x.id!==f.id);gravarConfig();desenhar()}};
+    if(parar) parar.onclick=()=>confirmar(row,t("stopQ",{n:esc(f.nome)}),()=>{config.partFixas=config.partFixas.filter(x=>x.id!==f.id);gravarConfig();desenhar()},desenharPai,t("yes"));
   });
   P.querySelectorAll(".linha[data-id]").forEach(row=>{
     const it=partilhadas.itens.find(x=>x.id===row.dataset.id);
     row.querySelector(".chip").onclick=()=>mudarEstado(it);
-    row.querySelector(".apagar").onclick=()=>confirmar(row,`Apagar “${esc(it.descricao)}”?`,()=>{partilhadas.itens=partilhadas.itens.filter(x=>x.id!==it.id);gravarPai();desenhar()},desenharPai);
+    row.querySelector(".apagar").onclick=()=>confirmar(row,t("confirmDel",{n:esc(it.descricao),resto:""}),()=>{partilhadas.itens=partilhadas.itens.filter(x=>x.id!==it.id);gravarPai();desenhar()},desenharPai);
   });
 }
 
 /* ---------- eventos ---------- */
 $("ant").onclick=()=>mudarMes(-1);$("seg").onclick=()=>mudarMes(1);
 $("modo").onclick=()=>{editar=!editar;desenhar()};
-$("tFixa").onclick=()=>{tipoFixa=true;$("tFixa").setAttribute("aria-pressed","true");$("tMes").setAttribute("aria-pressed","false")};
-$("tMes").onclick=()=>{tipoFixa=false;$("tMes").setAttribute("aria-pressed","true");$("tFixa").setAttribute("aria-pressed","false")};
+const alternarPar=(sim,nao)=>{$(sim).setAttribute("aria-pressed","true");$(nao).setAttribute("aria-pressed","false")};
+$("tFixa").onclick=()=>{tipoFixa=true;alternarPar("tFixa","tMes")};
+$("tMes").onclick=()=>{tipoFixa=false;alternarPar("tMes","tFixa")};
 $("addForm").addEventListener("submit",e=>{e.preventDefault();
   const nome=$("addNome").value.trim();if(!nome)return;const v=parse($("addValor").value)??0;const id=novoId();
   const orc=$("addOrc").checked;
@@ -628,12 +841,11 @@ $("addForm").addEventListener("submit",e=>{e.preventDefault();
   mes.itens.push({id,nome,previsto:v,valor:null,pago:false,extra:!tipoFixa,orc,gastos:[]});gravarMes();
   $("addNome").value="";$("addOrc").checked=false;$("addValor").value="";desenhar()});
 
-$("jMes").innerHTML=MESES.map((m,k)=>`<option value="${k+1}">${cap(m)}</option>`).join("");
 $("novoJar").onclick=()=>{$("jarForm").hidden=false;$("novoJar").hidden=true;$("jNome").focus()};
 $("jCancel").onclick=()=>{$("jarForm").hidden=true;$("novoJar").hidden=false;$("jarForm").reset();converter=null};
-function atualizarJarForm(){const t=parse($("jTotal").value),m=$("jModo").value;
-  $("jMensalL").firstChild.textContent="Valor a pôr de parte "+MODOS[m];
-  $("jMensal").placeholder=t?dec.format(valorPadrao(t,m)):(m==="mensal"?"valor anual ÷ 12":m==="ambos"?"valor anual ÷ 2":"valor anual")}
+function atualizarJarForm(){const tot=parse($("jTotal").value),m=$("jModo").value||"mensal";
+  $("jMensalL").textContent=t("jSetAside",{modo:modoTxt(m)});
+  $("jMensal").placeholder=tot?dec.format(valorPadrao(tot,m)):(m==="mensal"?t("jPh12"):m==="ambos"?t("jPh2"):t("jPh1"))}
 $("jTotal").addEventListener("input",atualizarJarForm);$("jarForm").addEventListener("reset",()=>setTimeout(atualizarJarForm));$("jModo").addEventListener("change",()=>{$("jMensal").value="";atualizarJarForm()});
 $("jarForm").addEventListener("submit",e=>{e.preventDefault();
   const total=parse($("jTotal").value);if(!total)return;
@@ -648,23 +860,21 @@ $("paiForm").addEventListener("submit",e=>{e.preventDefault();
   else{partilhadas.itens.push({id:novoId(),mes:chave,descricao:d,valor:v,estado:0,mesRecebido:null});gravarPai()}
   if(converter&&converter.tipo==="pai"){removerConta(converter.id,false);converter=null}
   $("pNome").value="";$("pValor").value="";desenhar()});
-$("pFixa").onclick=()=>{paiFixa=true;$("pFixa").setAttribute("aria-pressed","true");$("pMes").setAttribute("aria-pressed","false")};
-$("pMes").onclick=()=>{paiFixa=false;$("pMes").setAttribute("aria-pressed","true");$("pFixa").setAttribute("aria-pressed","false")};
+$("pFixa").onclick=()=>{paiFixa=true;alternarPar("pFixa","pMes")};
+$("pMes").onclick=()=>{paiFixa=false;alternarPar("pMes","pFixa")};
 
 $("copiar").onclick=()=>{
-  const it=partilhadas.itens.filter(i=>i.estado===0);if(!it.length)return;
-  const tot=it.reduce((s,i)=>s+metade(i),0);
-  const euro=v=>(Number.isInteger(v)?String(v):dec.format(v))+"€";
-  const meses=[...new Set(it.slice().sort((a,b)=>a.mes<b.mes?-1:1).map(i=>MESES[Number(i.mes.split("-")[1])-1]))];
+  const it=partilhadas.itens.filter(i=>i.estado===0).sort((a,b)=>a.mes<b.mes?-1:1);if(!it.length)return;
+  const meses=[...new Set(it.map(i=>MESES[Number(i.mes.split("-")[1])-1]))].join("/");
   const soma=r2(it.reduce((s,i)=>s+i.valor,0));
-  const txt=`Despesas ${meses.join("/")}\n`+it.map(i=>`${euro(i.valor)} ${i.descricao}`).join("\n")+`\n\n${dec.format(soma)}/2= ${dec.format(r2(soma/2))}€`;
+  const txt=t("msg",{meses,itens:it,soma,metade:r2(soma/2),dec:v=>dec.format(v),eur:v=>eur.format(v)});
   const box=$("copiaBox");
   const mostrar=msg=>{box.hidden=false;box.innerHTML=`<div class="add"><span class="nota">${msg}</span><textarea class="copia" id="copiaTxt" readonly></textarea>
-    <div class="acoes"><button class="btn sec sm" id="marcar">Marcar como pedidas</button><button class="link" id="fechar">Fechar</button></div></div>`;
+    <div class="acoes"><button class="btn sec sm" id="marcar">${t("markRequested")}</button><button class="link" id="fechar">${t("close")}</button></div></div>`;
     $("copiaTxt").value=txt;$("fechar").onclick=()=>{box.hidden=true};
     $("marcar").onclick=()=>{it.forEach(i=>i.estado=1);gravarPai();box.hidden=true;desenhar()}};
-  try{navigator.clipboard.writeText(txt).then(()=>mostrar("Mensagem copiada. Cola-a onde costumas falar com o pai."),
-    ()=>{mostrar("Seleciona o texto e copia-o.");$("copiaTxt").select()})}catch(err){mostrar("Seleciona o texto e copia-o.");$("copiaTxt").select()}
+  try{navigator.clipboard.writeText(txt).then(()=>mostrar(t("copied")),
+    ()=>{mostrar(t("selectCopy"));$("copiaTxt").select()})}catch(err){mostrar(t("selectCopy"));$("copiaTxt").select()}
 };
 
 /* ---------- cópia de segurança ---------- */
@@ -674,44 +884,43 @@ function recolher(){
     if(k&&k.startsWith(PREF)&&k[PREF.length]!=="_")dados[k.slice(PREF.length)]=JSON.parse(localStorage.getItem(k))}}catch(e){}
   return {app:"contas-do-mes",versao:1,exportado:new Date().toISOString(),dados};
 }
-const dataPT=iso=>new Date(iso).toLocaleDateString("pt-PT");
+const dataLocal=iso=>new Date(iso).toLocaleDateString(LOC);
 function mostrarUltimaCopia(){
-  const u=lerLocal("_ultimaCopia"), el=$("ultimaCopia"), temDados=config.despesas.length||config.mealheiros.length;
+  const u=lerPref("ultimaCopia"), el=$("ultimaCopia"), temDados=config.despesas.length||config.mealheiros.length;
   const dias=u?Math.floor((Date.now()-new Date(u))/864e5):null;
-  if(!temDados){el.textContent="Os teus dados ficam só neste telemóvel. Se vens da versão anterior, importa aqui a cópia que exportaste.";el.style.color="";return}
-  el.textContent=u?`Última cópia: ${dataPT(u)}${dias>30?` (há ${dias} dias). Está na altura de fazer outra.`:"."}`:"Ainda não fizeste nenhuma cópia. Os dados ficam só neste telemóvel: se o perderes, perdes as contas.";
+  if(!temDados){el.textContent=t("backupIntroEmpty");el.style.color="";return}
+  el.textContent=u?t("lastBackup",{d:dataLocal(u),dias}):t("noBackup");
   el.style.color=(!u||dias>30)?"var(--warn)":"";
 }
 function caixa(html){const box=$("expBox");box.hidden=false;box.innerHTML=html;box.scrollIntoView({behavior:"smooth",block:"nearest"});return box}
 $("exp").onclick=async()=>{
   const txt=JSON.stringify(recolher(),null,1), nome="contas-do-mes-"+new Date().toISOString().slice(0,10)+".json";
-  const marcar=()=>{try{localStorage.setItem(PREF+"_ultimaCopia",JSON.stringify(new Date().toISOString()))}catch(e){}mostrarUltimaCopia()};
+  const marcar=()=>{gravarPref("ultimaCopia",new Date().toISOString());mostrarUltimaCopia()};
   const file=new File([txt],nome,{type:"application/json"});
   try{
     if(navigator.canShare&&navigator.canShare({files:[file]})){
-      await navigator.share({files:[file],title:"Cópia das Contas do Mês"});marcar();
-      caixa(`<div class="dica">Cópia partilhada. Guarda-a num sítio seguro (Ficheiros, Drive ou email).</div>`);return}
+      await navigator.share({files:[file],title:t("shareTitle")});marcar();
+      caixa(`<div class="dica">${t("shared")}</div>`);return}
   }catch(e){ if(e&&e.name==="AbortError")return }
   const url=URL.createObjectURL(file),a=document.createElement("a");a.href=url;a.download=nome;document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),4000);marcar();
-  caixa(`<div class="dica">Ficheiro <b>${nome}</b> guardado nas transferências.</div>`);
+  caixa(`<div class="dica">${t("downloaded",{f:nome})}</div>`);
 };
 $("imp").onclick=()=>$("impFile").click();
 $("impFile").onchange=async e=>{const f=e.target.files[0];e.target.value="";if(!f)return;prepararImport(await f.text())};
 $("impTxt").onclick=()=>{
-  caixa(`<textarea class="copia" id="colado" placeholder="Cola aqui o texto da cópia"></textarea>
-    <div class="acoes"><button class="btn sm" type="button" id="colOk">Ler cópia</button><button class="link" type="button" id="colX">Cancelar</button></div>`);
+  caixa(`<textarea class="copia" id="colado" placeholder="${t("pastePh")}"></textarea>
+    <div class="acoes"><button class="btn sm" type="button" id="colOk">${t("readBackup")}</button><button class="link" type="button" id="colX">${t("cancel")}</button></div>`);
   $("colOk").onclick=()=>prepararImport($("colado").value);$("colX").onclick=()=>{$("expBox").hidden=true};
 };
 function prepararImport(txt){
   let obj=null;try{obj=JSON.parse(txt)}catch(e){}
   if(!obj||obj.app!=="contas-do-mes"||!obj.dados||typeof obj.dados!=="object"){
-    caixa(`<div class="dica aviso">Este ficheiro não é uma cópia das Contas do Mês. Escolhe o ficheiro .json que exportaste.</div>`);return}
+    caixa(`<div class="dica aviso">${t("notBackup")}</div>`);return}
   const ks=Object.keys(obj.dados), meses=ks.filter(k=>k.startsWith("mes-")).length;
   const temAgora=config.despesas.length||config.mealheiros.length||partilhadas.itens.length;
-  caixa(`<div class="dica ${temAgora?"aviso":""}">Cópia de ${dataPT(obj.exportado)}, com ${meses} ${meses===1?"mês":"meses"}.
-      ${temAgora?" Os dados que tens agora nesta app vão ser substituídos.":""}</div>
-    <div class="acoes"><button class="btn sm" type="button" id="impOk">${temAgora?"Substituir pelos da cópia":"Importar"}</button><button class="link" type="button" id="impX">Cancelar</button></div>`);
+  caixa(`<div class="dica ${temAgora?"aviso":""}">${t("backupOf",{d:dataLocal(obj.exportado),n:meses})}${temAgora?t("willReplace"):""}</div>
+    <div class="acoes"><button class="btn sm" type="button" id="impOk">${temAgora?t("replace"):t("importBtn")}</button><button class="link" type="button" id="impX">${t("cancel")}</button></div>`);
   $("impX").onclick=()=>{$("expBox").hidden=true};
   $("impOk").onclick=()=>{
     try{
@@ -719,7 +928,7 @@ function prepararImport(txt){
       apagar.forEach(k=>localStorage.removeItem(k));
       ks.forEach(k=>{if(/^[\w.-]+$/.test(k)&&k[0]!=="_")localStorage.setItem(PREF+k,JSON.stringify(obj.dados[k]))});
       location.reload();
-    }catch(e){caixa(`<div class="dica aviso">Não foi possível importar: o espaço do telemóvel pode estar cheio.</div>`)}
+    }catch(e){caixa(`<div class="dica aviso">${t("importFail")}</div>`)}
   };
 }
 
@@ -727,25 +936,44 @@ function prepararImport(txt){
 const instalada=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
 let pedidoInstalar=null;
 function mostrarInstalar(){
-  if(instalada()||lerLocal("_semAvisoInstalar"))return;
+  if(DEMO||instalada()||lerPref("semAvisoInstalar"))return;
   const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
-  $("instalarTxt").innerHTML=pedidoInstalar?"<b>Instala a app</b> para a abrires como as outras, mesmo sem internet."
-    :ios?"<b>Instala a app:</b> no Safari, toca em Partilhar e depois em <b>Adicionar ao ecrã principal</b>. Importa a tua cópia <b>já dentro da app instalada</b>: no iPhone, o Safari e a app guardam os dados em separado."
-    :"<b>Instala a app:</b> no menu do browser (⋮), escolhe <b>Instalar app</b> ou <b>Adicionar ao ecrã principal</b>.";
+  $("instalarTxt").innerHTML=pedidoInstalar?t("installPrompt"):ios?t("installIOS"):t("installOther");
   $("instalarBtn").hidden=!pedidoInstalar;$("instalar").hidden=false;
 }
 addEventListener("beforeinstallprompt",e=>{e.preventDefault();pedidoInstalar=e;mostrarInstalar()});
 addEventListener("appinstalled",()=>{$("instalar").hidden=true});
 $("instalarBtn").onclick=async()=>{if(!pedidoInstalar)return;pedidoInstalar.prompt();await pedidoInstalar.userChoice.catch(()=>{});pedidoInstalar=null;$("instalar").hidden=true};
-$("instalarFechar").onclick=()=>{$("instalar").hidden=true;try{localStorage.setItem(PREF+"_semAvisoInstalar","true")}catch(e){}};
+$("instalarFechar").onclick=()=>{$("instalar").hidden=true;gravarPref("semAvisoInstalar",true)};
 if("serviceWorker" in navigator) addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
 
-(async()=>{await ligar();
-  const c=await ler("config");if(c){config=c;config.mealheiros=config.mealheiros||[];config.partFixas=config.partFixas||[];config.despesas=config.despesas||[]}
+/* ---------- idioma e modo de exemplo ---------- */
+function mudarIdioma(l){
+  if(l===LANG)return;
+  LANG=l;gravarPref("lang",l);prepararIdioma();aplicarTextos();
+  if(DEMO){history.replaceState(null,"","#demo-"+l);semearExemplo();carregar()}
+  else{mostrarUltimaCopia();mostrarInstalar();desenhar()}
+}
+document.querySelectorAll("[data-lang]").forEach(b=>b.onclick=()=>mudarIdioma(b.dataset.lang));
+function entrarDemo(){location.hash="demo-"+LANG;location.reload()}
+$("verDemo").onclick=entrarDemo;
+$("sairDemo").onclick=()=>{history.replaceState(null,"",location.pathname);location.reload()};
+
+async function carregar(){
+  const c=await ler("config");
+  config=c||{rendimento:null,despesas:[],mealheiros:[],partFixas:[]};
+  config.mealheiros=config.mealheiros||[];config.partFixas=config.partFixas||[];config.despesas=config.despesas||[];
   partilhadas=(await ler("partilhadas"))||{itens:[]};
-  chave=mesDasContas(config.diaRecebe||20);
+  chave=mesDasContas(config.diaRecebe||20);editar=false;orcAberto=null;jarAberto=null;
   mostrarUltimaCopia();mostrarInstalar();
-  abrirMes()})();
+  await abrirMes();
+}
+(async()=>{
+  await ligar();
+  if(DEMO){semearExemplo();$("demo").hidden=false;$("backup").hidden=true;$("verDemo").hidden=true;$("estado").textContent=t("demoSaved")}
+  aplicarTextos();
+  await carregar();
+})();
 })();
 </script>
 </body>
