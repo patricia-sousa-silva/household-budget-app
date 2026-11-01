@@ -7,22 +7,27 @@ An offline-first Progressive Web App for monthly household budgeting. I built it
 The app is available in English and European Portuguese, and follows the browser's language by default.
 
 <p align="center">
-  <img src="docs/screenshot-en.png" alt="Monthly view in English with the summary, bills checked off and spending envelopes" width="300">
+  <img src="docs/screenshot-en.png" alt="Month view in English: income, a ring chart of paid, set aside and still to pay, and what is left" width="260">
   &nbsp;
-  <img src="docs/screenshot-pt.png" alt="The same monthly view in Portuguese" width="300">
+  <img src="docs/screenshot-history-en.png" alt="History view with a bar chart of what was left each month" width="260">
+  &nbsp;
+  <img src="docs/screenshot-pt.png" alt="The month view in Portuguese" width="260">
 </p>
 
 <p align="center"><sub>Screenshots with sample data.</sub></p>
 
 ## Features
 
+- **App-style navigation.** A bottom tab bar with Month, History, Pots, Split and More, like a native phone app.
+- **Month at a glance.** A ring chart of what is paid, set aside and still to pay, with what is left in the centre.
+- **History.** A bar chart and list of what was left each month, with the monthly average. Tapping a month opens it.
+- **Leftover allocation.** What is left at the end of the month can be assigned to any savings pot, and the allocation can be undone.
 - **Monthly bills with check-offs.** Recurring and one-off expenses. Each month starts from the usual amounts, and any amount can be changed for that month only.
 - **Spending envelopes.** For expenses paid in several goes (groceries, fuel, health), the planned amount becomes a budget. Each purchase is logged and the app shows how much is left.
-- **Annual sinking funds.** One fund per yearly expense (car insurance, property tax…), topped up every month or from the holiday and Christmas bonuses. Each fund shows whether it will be ready by the due date.
+- **Annual sinking funds.** One fund per yearly expense (car insurance, property tax…), topped up every month or from the holiday and Christmas bonuses. Each fund shows whether it will be ready by the due date. Funds with no due date work as open savings, with an optional goal.
 - **Shared child expenses.** Expenses paid in full and split 50/50. Half counts towards my budget, the other half is tracked as owed (to request → requested → received). A ready-to-send message lists everything still to be requested.
 - **Settings.** Cost splitting can be turned off, the other person renamed and the share changed from 50%. Funding pots from bonuses can be turned off too, so the same app works for couples, single people or flatmates.
 - **Pay-cycle months.** Income received in one month pays the following month's bills. The app opens on the right month based on payday.
-- **Summary at a glance.** Income, paid, set aside, still to pay and what is left to save.
 - **Backup and restore.** Export and import all data as a JSON file, using the native share sheet on phones.
 - **Installable and offline.** Works without a connection once installed.
 - **English and Portuguese.** Language switch at the bottom of the page, with numbers, currency and month names formatted for each language.
@@ -33,6 +38,7 @@ The app is available in English and European Portuguese, and follows the browser
 | Decision | Why |
 |---|---|
 | No backend, data in `localStorage` | Financial data never leaves the device. Nothing to host, secure or pay for. |
+| Charts drawn as inline SVG | The ring and bar charts are generated from the data with a few lines of code, so no chart library is needed and they follow the light and dark themes. |
 | Vanilla HTML, CSS and JavaScript in one file | No build step and no dependencies. The app is small enough not to need a framework. |
 | Service worker, network-first for the page | Updates arrive as soon as the phone is online, and the cached copy is used offline. Static assets are cache-first. |
 | Web App Manifest with maskable icons | Installs to the home screen like a native app on Android and iOS. |
