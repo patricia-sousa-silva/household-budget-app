@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Contas do Mês</title>
+<meta name="description" content="Caderno de contas mensal: despesas com visto, mealheiros anuais e despesas a dividir.">
+<meta name="theme-color" content="#2350B8">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/favicon.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Contas">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px system-ui,-apple-system,sans-serif;-webkit-text-size-adjust:100%}
+img{max-width:100%}
+[hidden]{display:none!important}
+.instalar{background:var(--pen-soft);color:var(--ink);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;font-size:13px}
+.instalar b{color:var(--pen)}
+/* Layout: uma coluna estreita tipo página de caderno — resumo do mês, contas com visto, mealheiros anuais e despesas a pedir ao pai. */
+:root{
+  --bg:#EEF2F6; --paper:#FFFFFF; --ink:#18202E; --muted:#5C6778; --line:#D7DEE7;
+  --pen:#2350B8; --pen-soft:#E3EAFA; --ok:#1F7A4D; --ok-soft:#DDF1E5; --warn:#B4531A; --warn-soft:#FBE8DC;
+  --jar:#7A4FB5; --jar-soft:#EEE6F8;
+  --display:"Familjen Grotesk","Helvetica Neue",Arial,sans-serif;
+  --body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --num:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F141C; --paper:#171E29; --ink:#E7ECF3; --muted:#9AA6B6; --line:#2A3443;
+  --pen:#7FA2F0; --pen-soft:#1E2A44; --ok:#5CC98E; --ok-soft:#173326; --warn:#F09A62; --warn-soft:#3A2416;
+  --jar:#B99BEA; --jar-soft:#2B2140; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F141C; --paper:#171E29; --ink:#E7ECF3; --muted:#9AA6B6; --line:#2A3443;
+  --pen:#7FA2F0; --pen-soft:#1E2A44; --ok:#5CC98E; --ok-soft:#173326; --warn:#F09A62; --warn-soft:#3A2416;
+  --jar:#B99BEA; --jar-soft:#2B2140; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 40px}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--pen);outline-offset:2px}
+.num{font-family:var(--num);font-variant-numeric:tabular-nums}
+
+header.top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.mes{font-family:var(--display);font-size:26px;font-weight:700;letter-spacing:-.01em;text-align:center;flex:1;text-wrap:balance}
+.mes small{display:block;font-family:var(--body);font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.nav{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--paper);display:grid;place-items:center;font-size:20px}
+
+.resumo{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.lbl{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.campo-eur{display:flex;align-items:center;gap:6px;border-bottom:2px solid var(--pen);padding-bottom:2px}
+.campo-eur input{border:0;background:transparent;width:100%;font-family:var(--num);font-size:28px;font-weight:600;padding:2px 0;outline:none}
+.campo-eur span{font-family:var(--num);font-size:22px;color:var(--muted)}
+.sobra{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.sobra .k{font-size:13px;color:var(--muted);font-weight:600}
+.sobra .v{font-family:var(--num);font-size:24px;font-weight:600}
+.sobra .v.neg{color:var(--warn)} .sobra .v.pos{color:var(--ok)}
+.barra{height:10px;border-radius:5px;background:var(--line);overflow:hidden;display:flex}
+.barra i{display:block;height:100%}
+.barra .p{background:var(--ok)} .barra .f{background:var(--pen);opacity:.45} .barra .j{background:var(--jar)}
+.legenda{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.legenda div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.legenda .k{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.legenda .k i{width:8px;height:8px;border-radius:2px;display:inline-block}
+.legenda .v{font-family:var(--num);font-size:15px;font-weight:600}
+.extra{display:flex;flex-direction:column;gap:4px;border-top:1px solid var(--line);padding-top:10px;font-size:13px}
+.extra div{display:flex;justify-content:space-between;gap:8px}
+.extra b{font-family:var(--num);font-weight:600}
+
+.cab{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px}
+.cab h2{font-family:var(--display);font-size:19px;margin:0;font-weight:600}
+.cab p{margin:0;font-size:13px;color:var(--muted)}
+.link{background:none;border:0;color:var(--pen);font-weight:700;font-size:14px;padding:8px 4px;white-space:nowrap}
+
+.lista{background:var(--paper);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.sep{padding:8px 14px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--jar);background:var(--jar-soft);border-top:1px solid var(--line)}
+.lista>.sep:first-child{border-top:0}
+.linha{display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px 14px 10px 10px;border-top:1px solid var(--line)}
+.lista>.linha:first-child,.sep+.linha{border-top:0}
+.visto{width:40px;height:40px;border-radius:50%;border:2px solid var(--line);background:transparent;display:grid;place-items:center;transition:background .15s,border-color .15s}
+.visto svg{width:20px;height:20px;stroke:var(--paper);stroke-width:3;fill:none;opacity:0}
+.visto[aria-checked="true"]{background:var(--ok);border-color:var(--ok)}
+.visto.jar[aria-checked="true"]{background:var(--jar);border-color:var(--jar)}
+.visto[aria-checked="true"] svg{opacity:1}
+.nome{font-weight:600;overflow-wrap:anywhere}
+.linha.paga .nome{color:var(--muted)}
+.sub{font-size:12px;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.tag{font-size:11px;font-weight:700;padding:1px 7px;border-radius:999px;background:var(--pen-soft);color:var(--pen)}
+.tag.dif{background:var(--warn-soft);color:var(--warn)}
+.tag.jar{background:var(--jar-soft);color:var(--jar)}
+.valor{display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:10px;padding:6px 8px;background:var(--bg)}
+.valor input{width:78px;border:0;background:transparent;text-align:right;font-family:var(--num);font-size:16px;outline:none}
+.valor span{font-family:var(--num);color:var(--muted)}
+.valor:focus-within{border-color:var(--pen)}
+
+.edit{grid-template-columns:minmax(0,1fr);gap:8px;padding:12px 14px}
+.ctrl{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.mini{height:36px;min-width:36px;padding:0 10px;border:1px solid var(--line);border-radius:10px;background:transparent;font-size:13px;font-weight:600}
+.mini.jar{color:var(--jar)} .mini.pai{color:var(--pen)} .mini.del{color:var(--warn);margin-left:auto}
+.mini:disabled{opacity:.35;cursor:default}
+.mini[aria-pressed="true"]{background:var(--pen-soft);color:var(--pen);border-color:var(--pen)}
+.visto.orc{border-color:var(--pen);color:var(--pen);font-size:24px;font-weight:600;line-height:1}
+.linha.aberta{background:var(--pen-soft)}
+.mbarra{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:5px;max-width:220px}
+.mbarra i{display:block;height:100%;background:var(--pen)}
+.mbarra i.exc{background:var(--warn)}
+.resta{text-align:right;display:flex;flex-direction:column;align-items:flex-end}
+.resta b{font-family:var(--num);font-size:16px;font-weight:600}
+.resta small{font-size:11px;color:var(--muted)}
+.resta.exc b{color:var(--warn)}
+.painel{border-top:1px solid var(--line);background:var(--bg);padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.gform{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.gform .campo{flex:1 1 140px}
+.gasto{display:flex;align-items:center;gap:10px;font-size:13px;padding:4px 0;border-bottom:1px dashed var(--line)}
+.gasto .q{color:var(--muted);font-family:var(--num);font-size:12px;min-width:40px}
+.gasto .d{flex:1;min-width:0;overflow-wrap:anywhere}
+.gasto b{font-family:var(--num);font-weight:600}
+.gasto button{border:0;background:none;color:var(--warn);font-size:15px;padding:4px 6px}
+.plano{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.chk{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);font-weight:600}
+.chk input{width:18px;height:18px;accent-color:var(--pen)}
+.tnome,.campo{width:100%;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--bg);min-width:0}
+.tnome{font-weight:600}
+.apagar{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:transparent;color:var(--warn);font-size:18px}
+
+.vazio{padding:20px 18px;display:flex;flex-direction:column;gap:12px;color:var(--muted)}
+.vazio strong{color:var(--ink);font-family:var(--display);font-size:17px}
+
+.add{background:var(--paper);border:1px dashed var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.add .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.add input[type=text]{flex:1 1 160px;min-width:0;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg)}
+.add label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--muted);flex:1 1 130px;min-width:0}
+.add select{border:1px solid var(--line);border-radius:10px;padding:9px;background:var(--bg)}
+.tipo{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;flex:1 1 220px}
+.tipo button{flex:1;border:0;background:transparent;padding:9px 6px;font-size:13px;font-weight:600;color:var(--muted)}
+.tipo button[aria-pressed="true"]{background:var(--pen-soft);color:var(--pen)}
+.btn{border:0;border-radius:10px;padding:10px 16px;background:var(--pen);color:var(--paper);font-weight:700}
+.btn.sec{background:var(--pen-soft);color:var(--pen)}
+.btn.jar{background:var(--jar);color:var(--paper)}
+.btn.sm{padding:7px 12px;font-size:13px}
+
+/* mealheiros */
+.jars{display:flex;flex-direction:column;gap:10px}
+.jarc{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.jarc .t{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.jarc .t .nome{font-family:var(--display);font-size:17px}
+.jarc .quando{font-size:12px;font-weight:700;color:var(--jar)}
+.jarc .quando.agora{color:var(--warn)}
+.jarc .val{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.jarc .val b{font-family:var(--num);color:var(--ink);font-size:16px}
+.jarc .barra{height:8px}
+.dica{font-size:13px;padding:8px 10px;border-radius:10px;background:var(--ok-soft);color:var(--ok)}
+.dica.aviso{background:var(--warn-soft);color:var(--warn)}
+.acoes{display:flex;gap:8px;flex-wrap:wrap}
+.grade{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.grade label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--muted);min-width:0}
+.grade label.todo{grid-column:1/-1}
+
+/* a pedir ao pai */
+.pai{grid-template-columns:minmax(0,1fr) auto 40px}
+.metade{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.metade b{font-family:var(--num);font-size:16px}
+.chip{border:0;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700}
+.chip.s0{background:var(--warn-soft);color:var(--warn)}
+.chip.s1{background:var(--pen-soft);color:var(--pen)}
+.chip.s2{background:var(--ok-soft);color:var(--ok)}
+.total-pai{display:flex;justify-content:space-between;gap:8px;padding:12px 14px;border-top:1px solid var(--line);font-weight:600}
+.total-pai b{font-family:var(--num)}
+textarea.copia{width:100%;min-height:120px;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg);font:13px/1.4 var(--num)}
+
+.nota{font-size:12px;color:var(--muted)}
+.estado{font-size:12px;color:var(--muted);text-align:center;min-height:1.2em}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap" id="app">
+  <header class="top">
+    <button class="nav" id="ant" aria-label="Mês anterior">‹</button>
+    <div class="mes" id="mesTitulo">—</div>
+    <button class="nav" id="seg" aria-label="Mês seguinte">›</button>
+  </header>
+  <section class="instalar" id="instalar" hidden>
+    <div id="instalarTxt"></div>
+    <div class="acoes"><button class="btn sm" type="button" id="instalarBtn" hidden>Instalar</button><button class="link" type="button" id="instalarFechar">Agora não</button></div>
+  </section>
+  <section class="resumo" id="resumo"></section>
+
+  <div class="cab"><h2>Contas do mês</h2><button class="link" id="modo">Editar lista</button></div>
+  <section class="lista" id="lista"><div class="vazio">A abrir o teu caderno…</div></section>
+  <form class="add" id="addForm" autocomplete="off">
+    <div class="row">
+      <input type="text" id="addNome" placeholder="Nova despesa (ex.: Ginásio)" aria-label="Nome da despesa" required>
+      <div class="valor"><input id="addValor" inputmode="decimal" placeholder="0,00" aria-label="Valor"><span>€</span></div>
+    </div>
+    <div class="row">
+      <div class="tipo" role="group" aria-label="Tipo de despesa">
+        <button type="button" id="tFixa" aria-pressed="true">Todos os meses</button>
+        <button type="button" id="tMes" aria-pressed="false">Só este mês</button>
+      </div>
+      <button class="btn" type="submit">Adicionar</button>
+    </div>
+    <label class="chk"><input type="checkbox" id="addOrc"> Vou gastando aos poucos (ex.: supermercado, saúde)</label>
+  </form>
+
+  <div class="cab"><div><h2>Mealheiros anuais</h2><p>Uma reserva por despesa anual, a crescer todos os meses.</p></div><button class="link" id="novoJar">+ Novo</button></div>
+  <form class="add" id="jarForm" autocomplete="off" hidden>
+    <div class="grade">
+      <label class="todo">Despesa anual<input type="text" class="campo" id="jNome" placeholder="ex.: Seguro do carro" required></label>
+      <label>Valor anual<span class="valor"><input id="jTotal" inputmode="decimal" placeholder="0,00" required><span>€</span></span></label>
+      <label>Pago em<select id="jMes" class="campo"></select></label>
+      <label>Já tenho guardado<span class="valor"><input id="jInicial" inputmode="decimal" placeholder="0,00"><span>€</span></span></label>
+      <label class="todo">Como vais juntar<select id="jModo" class="campo"><option value="mensal">Todos os meses</option><option value="ferias">Subsídio de férias (recebido em junho)</option><option value="natal">Subsídio de Natal (recebido em novembro)</option><option value="ambos">Metade em cada subsídio</option></select></label>
+      <label class="todo" id="jMensalL">Valor a pôr de parte por mês<span class="valor"><input id="jMensal" inputmode="decimal" placeholder="valor anual ÷ 12"><span>€</span></span></label>
+    </div>
+    <div class="acoes"><button class="btn jar" type="submit">Criar mealheiro</button><button class="btn sec" type="button" id="jCancel">Cancelar</button></div>
+  </form>
+  <section class="jars" id="jars"></section>
+
+  <div class="cab"><div><h2>A pedir ao pai</h2><p>Pagas tudo, metade fica no teu orçamento e a outra metade pedes ao pai.</p></div><button class="link" id="copiar">Copiar pedido</button></div>
+  <section class="lista" id="pai"></section>
+  <div id="copiaBox" hidden></div>
+  <form class="add" id="paiForm" autocomplete="off">
+    <div class="row">
+      <input type="text" id="pNome" placeholder="Despesa do filho (ex.: ATL, consulta)" aria-label="Descrição" required>
+      <div class="valor"><input id="pValor" inputmode="decimal" placeholder="total" aria-label="Valor total pago" required><span>€</span></div>
+    </div>
+    <div class="row">
+      <div class="tipo" role="group" aria-label="Repetição">
+        <button type="button" id="pFixa" aria-pressed="false">Todos os meses</button>
+        <button type="button" id="pMes" aria-pressed="true">Só este mês</button>
+      </div>
+      <button class="btn" type="submit">Adicionar</button>
+    </div>
+    <span class="nota">Escreve o valor total. Metade conta nas tuas despesas do mês e a outra metade fica a pedir ao pai.</span>
+  </form>
+
+  <section class="add" id="backup">
+    <div><h2 style="font-family:var(--display);font-size:19px;margin:0;font-weight:600">Cópia de segurança</h2>
+      <p class="nota" style="margin:4px 0 0" id="ultimaCopia">Os teus dados ficam só neste telemóvel. Exporta uma cópia de vez em quando.</p></div>
+    <div class="acoes"><button class="btn sec" type="button" id="exp">Exportar cópia</button><button class="btn sec" type="button" id="imp">Importar cópia</button><button class="link" type="button" id="impTxt">Colar texto</button></div>
+    <input type="file" id="impFile" accept=".json,application/json,text/plain" hidden>
+    <div id="expBox" hidden></div>
+  </section>
+
+  <div class="estado" id="estado"></div>
+  <p class="nota" style="text-align:center;margin:0">Versão 3.1 · 1 de novembro de 2026</p>
+</div>
+
+<script>
+(function(){
+const MESES=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+const SUGERIDAS=["Renda / prestação da casa","Luz","Água","Gás","Internet, TV e telemóvel","Supermercado","Combustível","Seguros","Saúde","Escola e atividades","Vestuário","Poupança"];
+const ESTADOS=["Por pedir","Pedido","Recebido"];
+const eur=new Intl.NumberFormat("pt-PT",{style:"currency",currency:"EUR"});
+const dec=new Intl.NumberFormat("pt-PT",{minimumFractionDigits:2,maximumFractionDigits:2});
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const parse1=s=>{if(s.includes(",")) s=s.replace(/\./g,"").replace(",",".");const n=Number(s);return s&&isFinite(n)?n:null};
+const parse=v=>{if(v==null)return null;const s=String(v).replace(/\s|€/g,"");if(!s)return null;
+  const partes=s.split("+").map(parse1);if(partes.some(x=>x==null))return null;return Math.round(partes.reduce((a,b)=>a+b,0)*100)/100}; // aceita "1108,09 + 53,03"
+const r2=n=>Math.round(n*100)/100;
+const novoId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const cap=s=>s.replace(/^./,c=>c.toUpperCase());
+const nomeMes=ch=>{const [a,m]=ch.split("-").map(Number);return MESES[m-1]+" "+a};
+const hoje=new Date();
+let chave=hoje.getFullYear()+"-"+String(hoje.getMonth()+1).padStart(2,"0");
+// mês das contas: o dinheiro recebido num mês paga as contas do mês seguinte
+function mesDasContas(dia){const d=new Date(hoje.getFullYear(),hoje.getMonth()+(hoje.getDate()>=dia?1:0),1);
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")}
+const mesAnterior=ch=>{let [a,m]=ch.split("-").map(Number);m--;if(m<1){m=12;a--}return MESES[m-1]};
+let config={rendimento:null,despesas:[],mealheiros:[],partFixas:[]};
+let partilhadas={itens:[]};
+let mes=null;
+let orcAberto=null, focarGasto=false;
+let editar=false, tipoFixa=true, paiFixa=false, jarAberto=null, jarModo=null;
+
+/* ---------- guardar: tudo fica neste dispositivo (localStorage) ---------- */
+const PREF="contas:";
+function lerLocal(nome){try{const v=localStorage.getItem(PREF+nome);return v?JSON.parse(v):null}catch(e){return null}}
+async function ligar(){ try{ if(navigator.storage&&navigator.storage.persist) await navigator.storage.persist() }catch(e){} }
+async function ler(nome){return lerLocal(nome)}
+function guardar(nome,obj){
+  try{localStorage.setItem(PREF+nome,JSON.stringify(obj));$("estado").textContent="Guardado neste telemóvel"}
+  catch(e){$("estado").textContent="Não foi possível guardar: o espaço do telemóvel pode estar cheio. Exporta uma cópia de segurança."}
+}
+const gravarConfig=()=>guardar("config",config);
+const gravarPai=()=>guardar("partilhadas",partilhadas);
+function gravarMes(){ const {_novo,...limpo}=mes; mes._novo=false; guardar("mes-"+chave,limpo) }
+
+/* ---------- mês ---------- */
+function mesDaLista(){return {rendimento:config.rendimento,itens:config.despesas.map(d=>({id:d.id,nome:d.nome,previsto:d.previsto,valor:null,pago:false,extra:false,orc:!!d.orc,gastos:[]}))}}
+async function abrirMes(){
+  $("lista").innerHTML='<div class="vazio">A abrir…</div>';
+  const [a,m]=chave.split("-").map(Number);
+  $("mesTitulo").innerHTML=esc(cap(MESES[m-1]))+"<small>"+a+"</small>";
+  const guardado=await ler("mes-"+chave);
+  mes=guardado||mesDaLista(); mes._novo=!guardado;
+  desenhar();
+}
+function mudarMes(d){let [a,m]=chave.split("-").map(Number);m+=d;if(m<1){m=12;a--}if(m>12){m=1;a++}
+  chave=a+"-"+String(m).padStart(2,"0");editar=false;orcAberto=null;jarAberto=null;abrirMes()}
+
+/* ---------- mealheiros ---------- */
+const SUBS={ferias:7,natal:12}; // mês das contas em que o subsídio entra (recebido no mês anterior)
+const MODOS={mensal:"por mês",ferias:"no subsídio de férias",natal:"no subsídio de Natal",ambos:"em cada subsídio"};
+const jarModo_=j=>j.modo||"mensal";
+const reforcos=j=>{const m=jarModo_(j);return m==="mensal"?[1,2,3,4,5,6,7,8,9,10,11,12]:m==="ambos"?[SUBS.ferias,SUBS.natal]:[SUBS[m]]};
+const valorPadrao=(total,modo)=>r2(modo==="mensal"?total/12:modo==="ambos"?total/2:total);
+const mesNum=()=>Number(chave.split("-")[1]);
+const jarsAtivos=()=>config.mealheiros.filter(j=>j.desde<=chave&&(reforcos(j).includes(mesNum())||jarMov(j)[chave]));
+const jarMov=j=>(j.mov=j.mov||{});
+function jarSaldo(j){let s=j.inicial||0;for(const k in jarMov(j)){const x=j.mov[k];if(x.feito)s+=x.valor}
+  for(const p of (j.pagamentos||[]))s-=p.valor;return r2(s)}
+const jarValorMes=j=>{const x=jarMov(j)[chave];return x&&x.valor!=null?x.valor:j.mensal};
+const jarFeito=j=>!!(jarMov(j)[chave]&&jarMov(j)[chave].feito);
+function jarMesesAte(j){const m=Number(chave.split("-")[1]);return (j.mesVence-m+12)%12} // 0 = paga este mês
+const jarPagoAgora=j=>(j.pagamentos||[]).some(p=>p.mes===chave);
+
+/* ---------- a pedir ao pai ---------- */
+const paiVisiveis=()=>partilhadas.itens.filter(i=>i.estado<2||i.mesRecebido===chave||i.mes===chave).sort((a,b)=>a.mes<b.mes?-1:1);
+const metade=i=>r2(i.valor/2);
+
+/* ---------- contas ---------- */
+const planoDe=i=>i.valor!=null?i.valor:(i.previsto||0);
+const gastoDe=i=>r2((i.gastos||[]).reduce((s,g)=>s+g.valor,0));
+// despesa com orçamento: conta o que planeaste, ou o que gastaste se passares do plano
+const valorDe=i=>i.orc?Math.max(planoDe(i),gastoDe(i)):planoDe(i);
+const pagoDe=i=>i.orc?gastoDe(i):(i.pago?valorDe(i):0);
+function contas(){
+  const cT=mes.itens.reduce((s,i)=>s+valorDe(i),0), cP=mes.itens.reduce((s,i)=>s+pagoDe(i),0);
+  const js=jarsAtivos(); const jT=js.reduce((s,j)=>s+jarValorMes(j),0), jP=js.filter(jarFeito).reduce((s,j)=>s+jarValorMes(j),0);
+  const doMes=partilhadas.itens.filter(i=>i.mes===chave);
+  const pTotal=doMes.reduce((s,i)=>s+i.valor,0), pM=doMes.reduce((s,i)=>s+(i.valor-metade(i)),0); // pM = a tua parte
+  const recebido=0;
+  const porReceber=r2(partilhadas.itens.filter(i=>i.estado<2).reduce((s,i)=>s+i.valor,0)/2);
+  return {cT,cP,jT,jP,pM,pTotal,recebido,porReceber,total:cT+jT+pM,pago:cP+jP+pM}
+}
+
+/* ---------- desenhar ---------- */
+function desenhar(){desenharResumo();desenharLista();desenharJars();desenharPai();
+  $("modo").textContent=editar?"Concluir":"Editar lista";$("modo").hidden=!mes.itens.length&&!editar}
+
+function desenharResumo(){
+  if(document.activeElement&&document.activeElement.id==="rend")return;
+  const r=mes.rendimento, c=contas();
+  const entradas=(r||0)+c.recebido, sobra=entradas-c.total, falta=c.total-c.pago;
+  const base=Math.max(entradas,c.total)||1;
+  $("resumo").innerHTML=`
+    <div><label class="lbl" for="rend">Recebi em ${mesAnterior(chave)}</label>
+      <div class="campo-eur"><input id="rend" inputmode="decimal" placeholder="ex.: 1108,09 + 53,03" value="${r!=null?dec.format(r):""}"><span>€</span></div>
+      <div class="sub" style="margin-top:6px">Para as contas de ${MESES[mesNum()-1]} · recebo por volta do dia
+        <select id="dia" class="campo" style="width:auto;padding:2px 6px" aria-label="Dia em que recebes">${Array.from({length:28},(_,k)=>`<option ${k+1===(config.diaRecebe||20)?"selected":""}>${k+1}</option>`).join("")}</select></div></div>
+    <div class="sobra"><span class="k">${r==null?"Indica o que recebeste para ver o que sobra":(sobra>=0?"Sobra para poupar":"Falta para cobrir as contas")}</span>
+      <span class="v ${r==null?"":(sobra>=0?"pos":"neg")}">${r==null?"—":eur.format(Math.abs(sobra))}</span></div>
+    <div class="barra" aria-hidden="true"><i class="p" style="width:${(c.cP+c.pM)/base*100}%"></i><i class="j" style="width:${c.jP/base*100}%"></i><i class="f" style="width:${falta/base*100}%"></i></div>
+    <div class="legenda">
+      <div><span class="k"><i style="background:var(--ok)"></i>Já pago</span><span class="v num">${eur.format(c.cP+c.pM)}</span></div>
+      <div><span class="k"><i style="background:var(--jar)"></i>Posto de parte</span><span class="v num">${eur.format(c.jP)}</span></div>
+      <div><span class="k"><i style="background:var(--pen);opacity:.45"></i>Por pagar / gastar</span><span class="v num">${eur.format(falta)}</span></div>
+    </div>
+    <div class="extra">
+      <div><span>Total das tuas despesas este mês</span><b>${eur.format(c.total)}</b></div>
+      ${c.pTotal?`<div><span>Despesas do filho: total ${eur.format(c.pTotal)}</span><b>a tua parte ${eur.format(c.pM)}</b></div>`:""}
+      ${c.porReceber?`<div><span>Ainda por receber do pai</span><b>${eur.format(c.porReceber)}</b></div>`:""}</div>`;
+  $("rend").addEventListener("change",e=>{const v=parse(e.target.value);mes.rendimento=v;gravarMes();
+    if(v!=null){config.rendimento=v;gravarConfig()}e.target.blur();desenharResumo()});
+  $("dia").onchange=e=>{config.diaRecebe=Number(e.target.value);gravarConfig()};
+  $("rend").addEventListener("keydown",e=>{if(e.key==="Enter")e.target.blur()});
+}
+
+const CHECK='<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+function desenharLista(){
+  const L=$("lista"), js=jarsAtivos();
+  if(!mes.itens.length&&!js.length&&!editar){
+    L.innerHTML=`<div class="vazio"><strong>Ainda sem contas neste caderno</strong>
+      Adiciona em baixo as tuas despesas fixas, ou começa com uma lista sugerida e depois põe os teus valores.
+      <div><button class="btn sec" id="sug">Usar uma lista sugerida</button></div></div>`;
+    $("sug").onclick=()=>{juntarCaderno();editar=true;desenhar()};
+    return;
+  }
+  if(editar){
+    const n=mes.itens.length, faltam=SUGERIDAS.filter(x=>!config.despesas.some(d=>d.nome.toLowerCase()===x.toLowerCase())).length;
+    L.innerHTML=(mes.itens.map((i,k)=>`<div class="linha edit" data-id="${i.id}">
+      <input class="tnome" value="${esc(i.nome)}" aria-label="Nome">
+      <div class="ctrl">
+        <div class="valor"><input class="tprev" inputmode="decimal" value="${dec.format(i.previsto||0)}" aria-label="Valor habitual de ${esc(i.nome)}"><span>€</span></div>
+        <button class="mini" data-m="-1" ${k===0?"disabled":""} aria-label="Subir ${esc(i.nome)}">↑</button>
+        <button class="mini" data-m="1" ${k===n-1?"disabled":""} aria-label="Descer ${esc(i.nome)}">↓</button>
+        <button class="mini" data-orc aria-pressed="${!!i.orc}" title="Vou gastando aos poucos">Aos poucos</button>
+        ${i.extra?"":`<button class="mini jar" data-c="jar">Mealheiro</button><button class="mini pai" data-c="pai">Dividir</button>`}
+        <button class="mini del" aria-label="Apagar ${esc(i.nome)}">✕</button></div></div>`).join("")||'<div class="vazio">Sem contas fixas.</div>')
+      +`<div class="vazio" style="padding:12px 16px"><span class="nota">Usa ↑ ↓ para arrumar a lista e juntar as despesas parecidas. <b>Mealheiro</b> passa a despesa para os mealheiros anuais; <b>Dividir</b> passa-a para as despesas a pedir ao pai. <b>Aos poucos</b> serve para despesas que pagas em várias vezes (supermercado, saúde): o valor passa a ser o teu orçamento e vais registando cada gasto. Os valores habituais valem para este mês e para os seguintes.</span>
+        ${faltam?`<div><button class="btn sec sm" id="sug2">Juntar a lista sugerida (${faltam} em falta)</button></div>`:""}</div>`;
+    if($("sug2"))$("sug2").onclick=()=>{juntarCaderno();desenhar()};
+    L.querySelectorAll(".linha").forEach(row=>{
+      const id=row.dataset.id,it=mes.itens.find(x=>x.id===id),fx=config.despesas.find(x=>x.id===id);
+      row.querySelector(".tnome").onchange=e=>{const n=e.target.value.trim()||it.nome;it.nome=n;if(fx){fx.nome=n;gravarConfig()}gravarMes()};
+      row.querySelector(".tprev").onchange=e=>{const v=parse(e.target.value)??0;it.previsto=v;e.target.value=dec.format(v);if(fx){fx.previsto=v;gravarConfig()}gravarMes();desenharResumo()};
+      row.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>mover(id,Number(b.dataset.m)));
+      row.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>iniciarConversao(b.dataset.c,it));
+      row.querySelector("[data-orc]").onclick=()=>{it.orc=!it.orc;it.gastos=it.gastos||[];
+        if(!it.orc&&it.gastos.length){it.valor=gastoDe(it);it.pago=true}
+        if(fx){fx.orc=it.orc;gravarConfig()}gravarMes();desenharLista();desenharResumo()};
+      row.querySelector(".del").onclick=()=>confirmar(row,`Apagar “${esc(it.nome)}”${fx?" deste mês e dos seguintes":""}?`,()=>{
+        removerConta(it.id,true);desenhar()},desenharLista);
+    });
+    return;
+  }
+  let h=mes.itens.map(i=>{
+    if(i.orc){const pl=planoDe(i),g=gastoDe(i),r=r2(pl-g),ab=orcAberto===i.id;
+      const pct=pl>0?Math.min(100,g/pl*100):(g>0?100:0);
+      return `<div class="linha ${ab?"aberta":""}" data-orc="${i.id}">
+        <button class="visto orc" aria-label="Registar gasto em ${esc(i.nome)}" aria-expanded="${ab}">+</button>
+        <div style="min-width:0" data-abrir><div class="nome">${esc(i.nome)}</div>
+          <div class="sub">gasto ${eur.format(g)} de ${eur.format(pl)}${i.extra?' <span class="tag">só este mês</span>':""}</div>
+          <div class="mbarra" aria-hidden="true"><i class="${r<0?"exc":""}" style="width:${pct}%"></i></div></div>
+        <div class="resta ${r<0?"exc":""}" data-abrir><b>${eur.format(Math.abs(r))}</b><small>${r<0?"acima do previsto":"ainda disponível"}</small></div></div>`
+        +(ab?`<div class="painel" data-painel="${i.id}">
+          <form class="gform" autocomplete="off">
+            <div class="valor"><input id="gV" inputmode="decimal" placeholder="0,00" aria-label="Valor gasto"><span>€</span></div>
+            <input id="gD" class="campo" placeholder="Nota (opcional), ex.: Continente">
+            <button class="btn sm" type="submit">Registar</button></form>
+          ${(i.gastos||[]).length?(i.gastos||[]).map(x=>`<div class="gasto" data-g="${x.id}"><span class="q">${x.dia?x.dia.slice(8,10)+"/"+x.dia.slice(5,7):""}</span><span class="d">${esc(x.desc||"")}</span><b>${eur.format(x.valor)}</b><button type="button" aria-label="Apagar gasto de ${eur.format(x.valor)}">✕</button></div>`).join(""):'<span class="nota">Ainda sem gastos este mês.</span>'}
+          <div class="plano"><span>Previsto para este mês</span><div class="valor"><input id="gP" inputmode="decimal" value="${dec.format(pl)}" aria-label="Previsto para ${esc(i.nome)} este mês"><span>€</span></div></div>
+        </div>`:"")}
+    const dif=i.valor!=null&&i.valor!==i.previsto;
+    return `<div class="linha ${i.pago?"paga":""}" data-id="${i.id}">
+      <button class="visto" role="checkbox" aria-checked="${i.pago}" aria-label="${esc(i.nome)} paga">${CHECK}</button>
+      <div style="min-width:0"><div class="nome">${esc(i.nome)}</div>
+        <div class="sub">${i.extra?'<span class="tag">só este mês</span>':""}${dif?`<span class="tag dif">habitual ${eur.format(i.previsto||0)}</span>`:""}</div></div>
+      <div class="valor"><input inputmode="decimal" value="${dec.format(valorDe(i))}" aria-label="Valor de ${esc(i.nome)} este mês"><span>€</span></div></div>`}).join("");
+  if(js.length){
+    h+=`<div class="sep">Pôr de parte nos mealheiros</div>`+js.map(j=>{const f=jarFeito(j);
+      return `<div class="linha ${f?"paga":""}" data-jar="${j.id}">
+        <button class="visto jar" role="checkbox" aria-checked="${f}" aria-label="${esc(j.nome)} posto de parte">${CHECK}</button>
+        <div style="min-width:0"><div class="nome">${esc(j.nome)}</div>
+          <div class="sub"><span class="tag jar">guardado ${eur.format(jarSaldo(j))}</span></div></div>
+        <div class="valor"><input inputmode="decimal" value="${dec.format(jarValorMes(j))}" aria-label="Valor a pôr de parte para ${esc(j.nome)}"><span>€</span></div></div>`}).join("");
+  }
+  L.innerHTML=h;
+  L.querySelectorAll(".linha[data-orc]").forEach(row=>{
+    const it=mes.itens.find(x=>x.id===row.dataset.orc);
+    const alternar=()=>{orcAberto=orcAberto===it.id?null:it.id;focarGasto=orcAberto===it.id;desenharLista()};
+    row.querySelector(".visto").onclick=alternar;row.querySelectorAll("[data-abrir]").forEach(el=>{el.style.cursor="pointer";el.onclick=alternar});
+  });
+  const P=L.querySelector(".painel");
+  if(P){const it=mes.itens.find(x=>x.id===P.dataset.painel);it.gastos=it.gastos||[];
+    P.querySelector("form").onsubmit=e=>{e.preventDefault();const v=parse($("gV").value);if(!v)return;
+      const d=new Date(),dia=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+      it.gastos.push({id:novoId(),valor:v,desc:$("gD").value.trim(),dia});gravarMes();focarGasto=true;desenhar()};
+    P.querySelectorAll(".gasto").forEach(el=>el.querySelector("button").onclick=()=>{it.gastos=it.gastos.filter(x=>x.id!==el.dataset.g);gravarMes();desenhar()});
+    ligarValor($("gP"),v=>{it.valor=(v==null||v===it.previsto)?null:v;gravarMes();desenhar()});
+    if(focarGasto){focarGasto=false;$("gV").focus({preventScroll:true});P.scrollIntoView({block:"nearest"})}}
+  L.querySelectorAll(".linha[data-id]").forEach(row=>{
+    const it=mes.itens.find(x=>x.id===row.dataset.id);
+    row.querySelector(".visto").onclick=()=>{it.pago=!it.pago;gravarMes();desenhar()};
+    ligarValor(row.querySelector("input"),v=>{it.valor=(v==null||v===it.previsto)?null:v;gravarMes();desenhar()});
+  });
+  L.querySelectorAll(".linha[data-jar]").forEach(row=>{
+    const j=config.mealheiros.find(x=>x.id===row.dataset.jar);
+    row.querySelector(".visto").onclick=()=>{const m=jarMov(j);const v=jarValorMes(j);
+      m[chave]={valor:v,feito:!jarFeito(j)};gravarConfig();desenhar()};
+    ligarValor(row.querySelector("input"),v=>{const m=jarMov(j);m[chave]={valor:v??j.mensal,feito:jarFeito(j)};gravarConfig();desenhar()});
+  });
+}
+function juntarCaderno(){
+  SUGERIDAS.forEach(n=>{if(config.despesas.some(d=>d.nome.toLowerCase()===n.toLowerCase()))return;
+    const d={id:novoId(),nome:n,previsto:0};config.despesas.push(d);
+    if(!mes.itens.some(x=>x.id===d.id))mes.itens.push({id:d.id,nome:n,previsto:0,valor:null,pago:false,extra:false})});
+  gravarConfig();gravarMes()}
+function mover(id,d){
+  const i=mes.itens.findIndex(x=>x.id===id),j=i+d;if(i<0||j<0||j>=mes.itens.length)return;
+  [mes.itens[i],mes.itens[j]]=[mes.itens[j],mes.itens[i]];
+  const ordem=mes.itens.map(x=>x.id),pos=x=>{const k=ordem.indexOf(x.id);return k<0?1e9:k};
+  config.despesas.sort((a,b)=>pos(a)-pos(b));gravarConfig();gravarMes();desenharLista();
+  const b=$("lista").querySelector(`[data-id="${id}"] [data-m="${d}"]`)||$("lista").querySelector(`[data-id="${id}"] [data-m="${-d}"]`);
+  if(b){b.focus({preventScroll:true});b.scrollIntoView({block:"nearest"})}}
+function removerConta(id,tudo){
+  const it=mes.itens.find(x=>x.id===id);
+  if(it&&(tudo||!it.pago))mes.itens=mes.itens.filter(x=>x.id!==id);
+  config.despesas=config.despesas.filter(x=>x.id!==id);gravarConfig();gravarMes()}
+let converter=null;
+function iniciarConversao(tipo,it){
+  converter={tipo,id:it.id};
+  if(tipo==="jar"){$("jarForm").hidden=false;$("novoJar").hidden=true;$("jNome").value=it.nome;
+    $("jMensal").value=it.previsto?dec.format(it.previsto):"";$("jTotal").value=it.previsto?dec.format(r2(it.previsto*12)):"";
+    $("jarForm").scrollIntoView({behavior:"smooth",block:"center"});$("jTotal").focus({preventScroll:true})}
+  else{$("pFixa").click();$("pNome").value=it.nome;$("pValor").value=it.previsto?dec.format(it.previsto):"";
+    $("paiForm").scrollIntoView({behavior:"smooth",block:"center"});$("pValor").focus({preventScroll:true})}
+  $("estado").textContent=tipo==="jar"?"Confirma o valor anual e o mês em que pagas, depois carrega em Criar mealheiro.":"Confirma o valor total (as duas metades) e carrega em Adicionar.";
+}
+function ligarValor(inp,fn){inp.onfocus=()=>inp.select();inp.onkeydown=e=>{if(e.key==="Enter")inp.blur()};inp.onchange=()=>fn(parse(inp.value))}
+function confirmar(row,texto,sim,nao){
+  row.style.gridTemplateColumns="minmax(0,1fr) auto";
+  row.innerHTML=`<div class="nome">${texto}</div><div style="display:flex;gap:6px"><button class="btn sec sm" data-a="n">Não</button><button class="btn sm" data-a="s" style="background:var(--warn)">Apagar</button></div>`;
+  row.querySelector('[data-a="n"]').onclick=nao;row.querySelector('[data-a="s"]').onclick=sim;
+}
+
+function desenharJars(){
+  const B=$("jars"), js=config.mealheiros;
+  if(!js.length){B.innerHTML=`<div class="lista"><div class="vazio"><strong>Nenhum mealheiro ainda</strong>
+    Cria um por cada despesa anual (seguro do carro, IUC, revisão, matrículas…). Cada mês dás o visto quando pões o valor de parte e vês quanto já tens para cada uma.</div></div>`;return}
+  B.innerHTML=js.map(j=>{
+    const s=jarSaldo(j), n=jarMesesAte(j), falta=r2(j.total-s), pct=Math.max(0,Math.min(100,s/(j.total||1)*100));
+    const restam=(n===0?12:n)-(jarFeito(j)?1:0);
+    // reforços ainda por fazer antes de pagar
+    const janela=n===0?12:n, m0=mesNum(); let previsto=0, nRef=0;
+    for(let k=0;k<janela;k++){const mm=((m0-1+k)%12)+1; if(!reforcos(j).includes(mm))continue; if(k===0&&jarFeito(j))continue; previsto+=k===0?jarValorMes(j):j.mensal; nRef++}
+    const modo=jarModo_(j);
+    let dica;
+    if(n===0&&!jarPagoAgora(j)) dica=s>=j.total?`<div class="dica">Paga este mês. Tens o suficiente: sobram ${eur.format(s-j.total)}.</div>`:`<div class="dica aviso">Paga este mês e faltam ${eur.format(falta)}.</div>`;
+    else if(falta<=0) dica=`<div class="dica">Já tens o valor completo.</div>`;
+    else if(modo!=="mensal"){
+      dica=previsto>=falta-0.005?`<div class="dica">Com ${nRef===1?"o próximo subsídio":"os próximos subsídios"} (${eur.format(previsto)}) chegas a tempo.</div>`
+        :`<div class="dica aviso">${nRef?`Mesmo com ${eur.format(previsto)} dos subsídios, faltam`:"Não recebes subsídio antes de pagar. Faltam"} ${eur.format(r2(falta-previsto))} até ${MESES[j.mesVence-1]}.</div>`}
+    else {const porMes=restam>0?r2(falta/restam):falta; const chega=restam>0&&porMes<=j.mensal+0.005;
+      dica=chega?`<div class="dica">Com ${eur.format(j.mensal)} por mês chegas a tempo.</div>`
+        :`<div class="dica aviso">Para chegar a ${MESES[j.mesVence-1]} precisas de ${eur.format(porMes)} por mês${restam>0?` (${restam} ${restam===1?"mês":"meses"})`:""}.</div>`}
+    const ult=(j.pagamentos||[]).slice(-1)[0];
+    let extra="";
+    if(jarAberto===j.id&&jarModo==="pagar") extra=`<div class="grade"><label class="todo">Valor que pagaste<span class="valor"><input id="pgV" inputmode="decimal" value="${dec.format(j.total)}"><span>€</span></span></label></div>
+      <div class="acoes"><button class="btn jar sm" data-a="pg">Registar pagamento em ${nomeMes(chave)}</button><button class="btn sec sm" data-a="x">Cancelar</button></div>`;
+    if(jarAberto===j.id&&jarModo==="editar") extra=`<div class="grade">
+      <label class="todo">Nome<input class="campo" id="eN" value="${esc(j.nome)}"></label>
+      <label>Valor anual<span class="valor"><input id="eT" inputmode="decimal" value="${dec.format(j.total)}"><span>€</span></span></label>
+      <label>Pago em<select class="campo" id="eM">${MESES.map((m,k)=>`<option value="${k+1}" ${k+1===j.mesVence?"selected":""}>${cap(m)}</option>`).join("")}</select></label>
+      <label class="todo">Como juntas<select class="campo" id="eModo"><option value="mensal" ${modo==="mensal"?"selected":""}>Todos os meses</option><option value="ferias" ${modo==="ferias"?"selected":""}>Subsídio de férias (recebido em junho)</option><option value="natal" ${modo==="natal"?"selected":""}>Subsídio de Natal (recebido em novembro)</option><option value="ambos" ${modo==="ambos"?"selected":""}>Metade em cada subsídio</option></select></label>
+      <label>Valor ${MODOS[modo]}<span class="valor"><input id="eP" inputmode="decimal" value="${dec.format(j.mensal)}"><span>€</span></span></label>
+      <label>Saldo inicial<span class="valor"><input id="eI" inputmode="decimal" value="${dec.format(j.inicial||0)}"><span>€</span></span></label></div>
+      <div class="acoes"><button class="btn jar sm" data-a="ok">Guardar</button><button class="btn sec sm" data-a="x">Cancelar</button><button class="btn sm" data-a="del" style="background:var(--warn);margin-left:auto">Apagar</button></div>`;
+    if(jarAberto===j.id&&jarModo==="apagar") extra=`<div class="dica aviso">Apagar o mealheiro “${esc(j.nome)}” e todo o seu histórico?</div>
+      <div class="acoes"><button class="btn sec sm" data-a="x">Não</button><button class="btn sm" data-a="del2" style="background:var(--warn)">Apagar</button></div>`;
+    return `<article class="jarc" data-id="${j.id}">
+      <div class="t"><span class="nome">${esc(j.nome)}</span><span class="quando ${n===0?"agora":""}">${n===0?(jarPagoAgora(j)?"Paga este mês ✓":"Paga este mês"):"Paga em "+MESES[j.mesVence-1]}</span></div>
+      <div class="val"><span>Guardado <b>${eur.format(s)}</b></span><span>de ${eur.format(j.total)} · ${eur.format(j.mensal)} ${MODOS[modo]}</span></div>
+      <div class="barra" aria-hidden="true"><i class="j" style="width:${pct}%"></i></div>
+      ${dica}
+      ${ult?`<span class="nota">Último pagamento: ${eur.format(ult.valor)} em ${nomeMes(ult.mes)}</span>`:""}
+      ${extra||`<div class="acoes"><button class="btn sec sm" data-a="pagar">Paguei a despesa</button><button class="link" data-a="editar">Editar</button></div>`}
+    </article>`}).join("");
+  B.querySelectorAll(".jarc").forEach(card=>{
+    const j=config.mealheiros.find(x=>x.id===card.dataset.id);
+    card.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{
+      const a=b.dataset.a;
+      if(a==="pagar"||a==="editar"){jarAberto=j.id;jarModo=a;desenharJars();return}
+      if(a==="x"){jarAberto=null;desenharJars();return}
+      if(a==="del"){jarModo="apagar";desenharJars();return}
+      if(a==="del2"){config.mealheiros=config.mealheiros.filter(x=>x.id!==j.id);jarAberto=null;gravarConfig();desenhar();return}
+      if(a==="pg"){const v=parse($("pgV").value);if(v==null)return;(j.pagamentos=j.pagamentos||[]).push({mes:chave,valor:v});jarAberto=null;gravarConfig();desenhar();return}
+      if(a==="ok"){j.nome=$("eN").value.trim()||j.nome;j.total=parse($("eT").value)??j.total;j.mesVence=Number($("eM").value);
+        const novoModo=$("eModo").value; if(novoModo!==modo&&parse($("eP").value)===j.mensal){j.mensal=valorPadrao(j.total,novoModo)} else j.mensal=parse($("eP").value)??j.mensal; j.modo=novoModo;j.inicial=parse($("eI").value)??0;jarAberto=null;gravarConfig();desenhar()}
+    });
+  });
+}
+
+const fixasAtivas=()=>config.partFixas.filter(f=>(f.desde||"")<=chave);
+const regFixa=f=>partilhadas.itens.find(i=>i.fixa===f.id&&i.mes===chave);
+const valorFixa=f=>{const r=regFixa(f);return r?r.valor:((f.valores||{})[chave]??f.previsto)};
+const chipHTML=i=>`<button class="chip s${i.estado}" aria-label="Estado: ${ESTADOS[i.estado]}. Tocar para mudar">${ESTADOS[i.estado]}</button>`;
+function desenharPai(){
+  const P=$("pai"), fx=fixasAtivas();
+  const outros=paiVisiveis().filter(i=>!(i.fixa&&i.mes===chave));
+  $("copiar").hidden=!partilhadas.itens.some(i=>i.estado===0);
+  if(!fx.length&&!outros.length){P.innerHTML=`<div class="vazio">Nada por pedir. Adiciona em baixo as despesas do teu filho que são para dividir: as de todos os meses (ATL, mensalidades…) e as pontuais.</div>`;return}
+  const pend=r2(partilhadas.itens.filter(i=>i.estado<2).reduce((s,i)=>s+i.valor,0)/2);
+  let h="";
+  if(fx.length){
+    h+=`<div class="sep" style="color:var(--pen);background:var(--pen-soft)">Todos os meses</div>`+fx.map(f=>{const r=regFixa(f),v=valorFixa(f);
+      return `<div class="linha ${r?"paga":""}" data-fixa="${f.id}" style="grid-template-columns:44px minmax(0,1fr) auto">
+        <button class="visto" role="checkbox" aria-checked="${!!r}" aria-label="${esc(f.nome)} paga" ${r&&r.estado>0?"disabled":""}>${CHECK}</button>
+        <div style="min-width:0"><div class="nome">${esc(f.nome)}</div>
+          <div class="sub">${r?`a pedir ${eur.format(metade(r))} ${chipHTML(r)}`:`metade ${eur.format(r2(v/2))} · dá o visto quando pagares`}</div></div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+          <div class="valor"><input inputmode="decimal" value="${dec.format(v)}" aria-label="Valor total de ${esc(f.nome)}"><span>€</span></div>
+          ${r?"":`<button class="link" data-a="parar" style="padding:2px 0;font-size:12px;color:var(--muted)">Deixar de repetir</button>`}</div></div>`}).join("");
+  }
+  if(outros.length){
+    h+=(fx.length?`<div class="sep" style="color:var(--pen);background:var(--pen-soft)">Pontuais e por receber</div>`:"")+outros.map(i=>`<div class="linha pai" data-id="${i.id}">
+      <div style="min-width:0"><div class="nome">${esc(i.descricao)}</div>
+        <div class="sub">${cap(nomeMes(i.mes))} · pagaste ${eur.format(i.valor)}${i.estado===2&&i.mesRecebido?` · recebido em ${nomeMes(i.mesRecebido)}`:""}</div></div>
+      <div class="metade"><b>${eur.format(metade(i))}</b>${chipHTML(i)}</div>
+      <button class="apagar" aria-label="Apagar ${esc(i.descricao)}">✕</button></div>`).join("");
+  }
+  h+=`<div class="total-pai"><span>Total a receber do pai</span><b>${eur.format(pend)}</b></div>`;
+  P.innerHTML=h;
+  const mudarEstado=it=>{it.estado=(it.estado+1)%3;it.mesRecebido=it.estado===2?chave:null;gravarPai();desenhar()};
+  P.querySelectorAll(".linha[data-fixa]").forEach(row=>{
+    const f=config.partFixas.find(x=>x.id===row.dataset.fixa), r=regFixa(f);
+    row.querySelector(".visto").onclick=()=>{
+      if(r){ if(r.estado>0)return; partilhadas.itens=partilhadas.itens.filter(x=>x!==r) }
+      else partilhadas.itens.push({id:novoId(),fixa:f.id,mes:chave,descricao:f.nome,valor:valorFixa(f),estado:0,mesRecebido:null});
+      gravarPai();desenhar()};
+    if(r) row.querySelector(".chip").onclick=()=>mudarEstado(r);
+    ligarValor(row.querySelector("input"),v=>{v=v??f.previsto;
+      if(r){r.valor=v;gravarPai()} else {(f.valores=f.valores||{})[chave]=v;gravarConfig()} desenhar()});
+    const parar=row.querySelector('[data-a="parar"]');
+    if(parar) parar.onclick=()=>{row.style.gridTemplateColumns="minmax(0,1fr) auto";
+      row.innerHTML=`<div class="nome">Deixar de repetir “${esc(f.nome)}” a partir deste mês?</div><div style="display:flex;gap:6px"><button class="btn sec sm" data-a="n">Não</button><button class="btn sm" data-a="s" style="background:var(--warn)">Sim</button></div>`;
+      row.querySelector('[data-a="n"]').onclick=desenharPai;
+      row.querySelector('[data-a="s"]').onclick=()=>{config.partFixas=config.partFixas.filter(x=>x.id!==f.id);gravarConfig();desenhar()}};
+  });
+  P.querySelectorAll(".linha[data-id]").forEach(row=>{
+    const it=partilhadas.itens.find(x=>x.id===row.dataset.id);
+    row.querySelector(".chip").onclick=()=>mudarEstado(it);
+    row.querySelector(".apagar").onclick=()=>confirmar(row,`Apagar “${esc(it.descricao)}”?`,()=>{partilhadas.itens=partilhadas.itens.filter(x=>x.id!==it.id);gravarPai();desenhar()},desenharPai);
+  });
+}
+
+/* ---------- eventos ---------- */
+$("ant").onclick=()=>mudarMes(-1);$("seg").onclick=()=>mudarMes(1);
+$("modo").onclick=()=>{editar=!editar;desenhar()};
+$("tFixa").onclick=()=>{tipoFixa=true;$("tFixa").setAttribute("aria-pressed","true");$("tMes").setAttribute("aria-pressed","false")};
+$("tMes").onclick=()=>{tipoFixa=false;$("tMes").setAttribute("aria-pressed","true");$("tFixa").setAttribute("aria-pressed","false")};
+$("addForm").addEventListener("submit",e=>{e.preventDefault();
+  const nome=$("addNome").value.trim();if(!nome)return;const v=parse($("addValor").value)??0;const id=novoId();
+  const orc=$("addOrc").checked;
+  if(tipoFixa){config.despesas.push({id,nome,previsto:v,orc});gravarConfig()}
+  mes.itens.push({id,nome,previsto:v,valor:null,pago:false,extra:!tipoFixa,orc,gastos:[]});gravarMes();
+  $("addNome").value="";$("addOrc").checked=false;$("addValor").value="";desenhar()});
+
+$("jMes").innerHTML=MESES.map((m,k)=>`<option value="${k+1}">${cap(m)}</option>`).join("");
+$("novoJar").onclick=()=>{$("jarForm").hidden=false;$("novoJar").hidden=true;$("jNome").focus()};
+$("jCancel").onclick=()=>{$("jarForm").hidden=true;$("novoJar").hidden=false;$("jarForm").reset();converter=null};
+function atualizarJarForm(){const t=parse($("jTotal").value),m=$("jModo").value;
+  $("jMensalL").firstChild.textContent="Valor a pôr de parte "+MODOS[m];
+  $("jMensal").placeholder=t?dec.format(valorPadrao(t,m)):(m==="mensal"?"valor anual ÷ 12":m==="ambos"?"valor anual ÷ 2":"valor anual")}
+$("jTotal").addEventListener("input",atualizarJarForm);$("jarForm").addEventListener("reset",()=>setTimeout(atualizarJarForm));$("jModo").addEventListener("change",()=>{$("jMensal").value="";atualizarJarForm()});
+$("jarForm").addEventListener("submit",e=>{e.preventDefault();
+  const total=parse($("jTotal").value);if(!total)return;
+  config.mealheiros.push({id:novoId(),nome:$("jNome").value.trim(),total,mesVence:Number($("jMes").value),
+    modo:$("jModo").value,mensal:parse($("jMensal").value)??valorPadrao(total,$("jModo").value),inicial:parse($("jInicial").value)??0,desde:chave,mov:{},pagamentos:[]});
+  if(converter&&converter.tipo==="jar"){removerConta(converter.id,false);converter=null}
+  gravarConfig();e.target.reset();$("jarForm").hidden=true;$("novoJar").hidden=false;desenhar()});
+
+$("paiForm").addEventListener("submit",e=>{e.preventDefault();
+  const d=$("pNome").value.trim(),v=parse($("pValor").value);if(!d||!v)return;
+  if(paiFixa){config.partFixas.push({id:novoId(),nome:d,previsto:v,desde:chave,valores:{}});gravarConfig()}
+  else{partilhadas.itens.push({id:novoId(),mes:chave,descricao:d,valor:v,estado:0,mesRecebido:null});gravarPai()}
+  if(converter&&converter.tipo==="pai"){removerConta(converter.id,false);converter=null}
+  $("pNome").value="";$("pValor").value="";desenhar()});
+$("pFixa").onclick=()=>{paiFixa=true;$("pFixa").setAttribute("aria-pressed","true");$("pMes").setAttribute("aria-pressed","false")};
+$("pMes").onclick=()=>{paiFixa=false;$("pMes").setAttribute("aria-pressed","true");$("pFixa").setAttribute("aria-pressed","false")};
+
+$("copiar").onclick=()=>{
+  const it=partilhadas.itens.filter(i=>i.estado===0);if(!it.length)return;
+  const tot=it.reduce((s,i)=>s+metade(i),0);
+  const euro=v=>(Number.isInteger(v)?String(v):dec.format(v))+"€";
+  const meses=[...new Set(it.slice().sort((a,b)=>a.mes<b.mes?-1:1).map(i=>MESES[Number(i.mes.split("-")[1])-1]))];
+  const soma=r2(it.reduce((s,i)=>s+i.valor,0));
+  const txt=`Despesas ${meses.join("/")}\n`+it.map(i=>`${euro(i.valor)} ${i.descricao}`).join("\n")+`\n\n${dec.format(soma)}/2= ${dec.format(r2(soma/2))}€`;
+  const box=$("copiaBox");
+  const mostrar=msg=>{box.hidden=false;box.innerHTML=`<div class="add"><span class="nota">${msg}</span><textarea class="copia" id="copiaTxt" readonly></textarea>
+    <div class="acoes"><button class="btn sec sm" id="marcar">Marcar como pedidas</button><button class="link" id="fechar">Fechar</button></div></div>`;
+    $("copiaTxt").value=txt;$("fechar").onclick=()=>{box.hidden=true};
+    $("marcar").onclick=()=>{it.forEach(i=>i.estado=1);gravarPai();box.hidden=true;desenhar()}};
+  try{navigator.clipboard.writeText(txt).then(()=>mostrar("Mensagem copiada. Cola-a onde costumas falar com o pai."),
+    ()=>{mostrar("Seleciona o texto e copia-o.");$("copiaTxt").select()})}catch(err){mostrar("Seleciona o texto e copia-o.");$("copiaTxt").select()}
+};
+
+/* ---------- cópia de segurança ---------- */
+function recolher(){
+  const dados={};
+  try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);
+    if(k&&k.startsWith(PREF)&&k[PREF.length]!=="_")dados[k.slice(PREF.length)]=JSON.parse(localStorage.getItem(k))}}catch(e){}
+  return {app:"contas-do-mes",versao:1,exportado:new Date().toISOString(),dados};
+}
+const dataPT=iso=>new Date(iso).toLocaleDateString("pt-PT");
+function mostrarUltimaCopia(){
+  const u=lerLocal("_ultimaCopia"), el=$("ultimaCopia"), temDados=config.despesas.length||config.mealheiros.length;
+  const dias=u?Math.floor((Date.now()-new Date(u))/864e5):null;
+  if(!temDados){el.textContent="Os teus dados ficam só neste telemóvel. Se vens da versão anterior, importa aqui a cópia que exportaste.";el.style.color="";return}
+  el.textContent=u?`Última cópia: ${dataPT(u)}${dias>30?` (há ${dias} dias). Está na altura de fazer outra.`:"."}`:"Ainda não fizeste nenhuma cópia. Os dados ficam só neste telemóvel: se o perderes, perdes as contas.";
+  el.style.color=(!u||dias>30)?"var(--warn)":"";
+}
+function caixa(html){const box=$("expBox");box.hidden=false;box.innerHTML=html;box.scrollIntoView({behavior:"smooth",block:"nearest"});return box}
+$("exp").onclick=async()=>{
+  const txt=JSON.stringify(recolher(),null,1), nome="contas-do-mes-"+new Date().toISOString().slice(0,10)+".json";
+  const marcar=()=>{try{localStorage.setItem(PREF+"_ultimaCopia",JSON.stringify(new Date().toISOString()))}catch(e){}mostrarUltimaCopia()};
+  const file=new File([txt],nome,{type:"application/json"});
+  try{
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      await navigator.share({files:[file],title:"Cópia das Contas do Mês"});marcar();
+      caixa(`<div class="dica">Cópia partilhada. Guarda-a num sítio seguro (Ficheiros, Drive ou email).</div>`);return}
+  }catch(e){ if(e&&e.name==="AbortError")return }
+  const url=URL.createObjectURL(file),a=document.createElement("a");a.href=url;a.download=nome;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),4000);marcar();
+  caixa(`<div class="dica">Ficheiro <b>${nome}</b> guardado nas transferências.</div>`);
+};
+$("imp").onclick=()=>$("impFile").click();
+$("impFile").onchange=async e=>{const f=e.target.files[0];e.target.value="";if(!f)return;prepararImport(await f.text())};
+$("impTxt").onclick=()=>{
+  caixa(`<textarea class="copia" id="colado" placeholder="Cola aqui o texto da cópia"></textarea>
+    <div class="acoes"><button class="btn sm" type="button" id="colOk">Ler cópia</button><button class="link" type="button" id="colX">Cancelar</button></div>`);
+  $("colOk").onclick=()=>prepararImport($("colado").value);$("colX").onclick=()=>{$("expBox").hidden=true};
+};
+function prepararImport(txt){
+  let obj=null;try{obj=JSON.parse(txt)}catch(e){}
+  if(!obj||obj.app!=="contas-do-mes"||!obj.dados||typeof obj.dados!=="object"){
+    caixa(`<div class="dica aviso">Este ficheiro não é uma cópia das Contas do Mês. Escolhe o ficheiro .json que exportaste.</div>`);return}
+  const ks=Object.keys(obj.dados), meses=ks.filter(k=>k.startsWith("mes-")).length;
+  const temAgora=config.despesas.length||config.mealheiros.length||partilhadas.itens.length;
+  caixa(`<div class="dica ${temAgora?"aviso":""}">Cópia de ${dataPT(obj.exportado)}, com ${meses} ${meses===1?"mês":"meses"}.
+      ${temAgora?" Os dados que tens agora nesta app vão ser substituídos.":""}</div>
+    <div class="acoes"><button class="btn sm" type="button" id="impOk">${temAgora?"Substituir pelos da cópia":"Importar"}</button><button class="link" type="button" id="impX">Cancelar</button></div>`);
+  $("impX").onclick=()=>{$("expBox").hidden=true};
+  $("impOk").onclick=()=>{
+    try{
+      const apagar=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(PREF)&&k[PREF.length]!=="_")apagar.push(k)}
+      apagar.forEach(k=>localStorage.removeItem(k));
+      ks.forEach(k=>{if(/^[\w.-]+$/.test(k)&&k[0]!=="_")localStorage.setItem(PREF+k,JSON.stringify(obj.dados[k]))});
+      location.reload();
+    }catch(e){caixa(`<div class="dica aviso">Não foi possível importar: o espaço do telemóvel pode estar cheio.</div>`)}
+  };
+}
+
+/* ---------- instalar no ecrã principal ---------- */
+const instalada=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+let pedidoInstalar=null;
+function mostrarInstalar(){
+  if(instalada()||lerLocal("_semAvisoInstalar"))return;
+  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+  $("instalarTxt").innerHTML=pedidoInstalar?"<b>Instala a app</b> para a abrires como as outras, mesmo sem internet."
+    :ios?"<b>Instala a app:</b> no Safari, toca em Partilhar e depois em <b>Adicionar ao ecrã principal</b>. Importa a tua cópia <b>já dentro da app instalada</b>: no iPhone, o Safari e a app guardam os dados em separado."
+    :"<b>Instala a app:</b> no menu do browser (⋮), escolhe <b>Instalar app</b> ou <b>Adicionar ao ecrã principal</b>.";
+  $("instalarBtn").hidden=!pedidoInstalar;$("instalar").hidden=false;
+}
+addEventListener("beforeinstallprompt",e=>{e.preventDefault();pedidoInstalar=e;mostrarInstalar()});
+addEventListener("appinstalled",()=>{$("instalar").hidden=true});
+$("instalarBtn").onclick=async()=>{if(!pedidoInstalar)return;pedidoInstalar.prompt();await pedidoInstalar.userChoice.catch(()=>{});pedidoInstalar=null;$("instalar").hidden=true};
+$("instalarFechar").onclick=()=>{$("instalar").hidden=true;try{localStorage.setItem(PREF+"_semAvisoInstalar","true")}catch(e){}};
+if("serviceWorker" in navigator) addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+
+(async()=>{await ligar();
+  const c=await ler("config");if(c){config=c;config.mealheiros=config.mealheiros||[];config.partFixas=config.partFixas||[];config.despesas=config.despesas||[]}
+  partilhadas=(await ler("partilhadas"))||{itens:[]};
+  chave=mesDasContas(config.diaRecebe||20);
+  mostrarUltimaCopia();mostrarInstalar();
+  abrirMes()})();
+})();
+</script>
+</body>
+</html>
