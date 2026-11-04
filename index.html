@@ -245,6 +245,13 @@ textarea.copia{width:100%;min-height:120px;border:1px solid var(--line);border-r
 .tabs [data-tab="mais"] svg{fill:currentColor;stroke:none}
 .tabs button[aria-current="page"]{color:var(--pen)}
 .tabs button[aria-current="page"] .ic{background:var(--pen-soft)}
+.pagocom{flex-direction:row!important;align-items:center;gap:10px!important;flex:none!important}
+.pagocom select{flex:1;min-width:0}
+.movs{display:flex;flex-direction:column;gap:2px;border-top:1px solid var(--line);padding-top:8px}
+.movs .lbl{margin-bottom:2px}
+.mov{display:flex;justify-content:space-between;gap:10px;font-size:13px}
+.mov span{color:var(--muted);min-width:0;overflow-wrap:anywhere}
+.mov b{font-family:var(--num);font-weight:600;white-space:nowrap}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -319,6 +326,7 @@ textarea.copia{width:100%;min-height:120px;border:1px solid var(--line);border-r
       <input type="text" id="pNome" data-i18n-ph="pNamePh" data-i18n-aria="description" required>
       <div class="valor"><input id="pValor" inputmode="decimal" data-i18n-ph="pTotalPh" data-i18n-aria="pTotalAria" required><span>€</span></div>
     </div>
+    <label class="pagocom"><span data-i18n="paidWith"></span><select id="pPot" class="campo"></select></label>
     <div class="row">
       <div class="tipo" role="group" data-i18n-aria="repeat">
         <button type="button" id="pFixa" aria-pressed="false" data-i18n="everyMonth"></button>
@@ -326,7 +334,7 @@ textarea.copia{width:100%;min-height:120px;border:1px solid var(--line);border-r
       </div>
       <button class="btn" type="submit" data-i18n="add"></button>
     </div>
-    <span class="nota" data-i18n="paiNote"></span>
+    <span class="nota" id="pNota"></span>
   </form>
   </main>
 
@@ -384,7 +392,7 @@ pt:{
   pNamePh:"Despesa (ex.: ATL, consulta)", description:"Descrição", pTotalPh:"total", pTotalAria:"Valor total pago", repeat:"Repetição",
   paiNote:x=>x.pct===50?`Escreve o valor total. Metade conta nas tuas despesas do mês e a outra metade fica a pedir ${x.aQuem}.`:`Escreve o valor total. ${x.pct}% fica a pedir ${x.aQuem} e o resto conta nas tuas despesas do mês.`,
   backupTitle:"Cópia de segurança", export:"Exportar cópia", import:"Importar cópia", pasteText:"Colar texto",
-  version:"Versão 6 · 1 de novembro de 2026", trySample:"Ver com dados de exemplo", language:"Idioma",
+  version:"Versão 7 · 4 de novembro de 2026", trySample:"Ver com dados de exemplo", language:"Idioma",
   saved:"Guardado neste dispositivo", saveFail:"Não foi possível guardar: o espaço do dispositivo pode estar cheio. Exporta uma cópia de segurança.",
   demoSaved:"Exemplo: as alterações não ficam guardadas",
   receivedIn:"Recebi em {mes}", incomePh:"ex.: 1108,09 + 53,03", forBillsOf:"Para as contas de {mes} · recebo por volta do dia", payday:"Dia em que recebes",
@@ -439,11 +447,14 @@ pt:{
   histLine:"Recebido {r} · despesas {g}", distributed:"{v} para mealheiros", avgLeft:"Média do que sobra por mês", histChart:"Gráfico do que sobrou nos últimos meses",
   noDate:"Sem data (poupança)", noDateTag:"Sem data", ofGoal:"objetivo {t}", goalLeft:"Faltam {v} para o objetivo.", iUsed:"Usei dinheiro", amountUsed:"Valor que usaste",
   logUse:"Registar em {m}", fromLeftover:"Do que sobrou: {v}",
+  paidWith:"Pago com", paidBudget:"O orçamento do mês", fromPot:"pago do mealheiro {n}",
+  potNote:x=>`Sai do mealheiro “${x.n}” e não conta no orçamento do mês. Quando receberes a parte ${x.doQuem}, ela volta para o mealheiro.`,
+  movements:"Últimos movimentos", usedLbl:"Dinheiro usado", returnedLbl:"{v} devolvido", noteOpt:"Nota (opcional)", setAsideMov:"Posto de parte",
   defaultWho:"o pai", settingsTitle:"Definições", setSplit:"Dividir despesas com outra pessoa",
   setWho:"Com quem divides", setWhoHelp:"Escreve com o artigo, por exemplo “o pai”, “a mãe” ou “o João”.", setPct:"Percentagem que pedes",
   setSubs:"Juntar para os mealheiros com os subsídios de férias e de Natal",
   demo:{renda:"Renda",luz:"Luz",net:"Internet e telemóvel",super:"Supermercado",comb:"Combustível",poup:"Poupança",lojaA:"Continente",lojaB:"Lidl",posto:"Galp",
-    seguro:"Seguro do carro",iuc:"IUC",poupanca:"Fundo de emergência",natacao:"Natação",visita:"Visita de estudo",material:"Material escolar"}
+    seguro:"Seguro do carro",iuc:"IUC",poupanca:"Fundo de emergência",roupa:"Roupa da criança",casaco:"Casaco e botas",natacao:"Natação",visita:"Visita de estudo",material:"Material escolar"}
 },
 en:{
   appTitle:"Household Budget", prevMonth:"Previous month", nextMonth:"Next month", install:"Install", notNow:"Not now",
@@ -461,7 +472,7 @@ en:{
   pNamePh:"Expense (e.g. after-school club, doctor)", description:"Description", pTotalPh:"total", pTotalAria:"Total amount paid", repeat:"Repeats",
   paiNote:x=>x.pct===50?`Enter the full amount. Half counts towards your month and the other half is claimed from ${x.quem}.`:`Enter the full amount. ${x.pct}% is claimed from ${x.quem} and the rest counts towards your month.`,
   backupTitle:"Backup", export:"Export backup", import:"Import backup", pasteText:"Paste text",
-  version:"Version 6 · 1 November 2026", trySample:"Try with sample data", language:"Language",
+  version:"Version 7 · 4 November 2026", trySample:"Try with sample data", language:"Language",
   saved:"Saved on this device", saveFail:"Couldn't save: the device storage may be full. Export a backup.",
   demoSaved:"Sample data: changes are not saved",
   receivedIn:"Received in {mes}", incomePh:"e.g. 1108.09 + 53.03", forBillsOf:"For {mes}'s bills · I get paid around day", payday:"Payday",
@@ -516,11 +527,14 @@ en:{
   histLine:"Received {r} · spent {g}", distributed:"{v} to pots", avgLeft:"Average left per month", histChart:"Chart of what was left in recent months",
   noDate:"No due date (savings)", noDateTag:"No due date", ofGoal:"goal {t}", goalLeft:"{v} to reach the goal.", iUsed:"I used some", amountUsed:"Amount you used",
   logUse:"Log in {m}", fromLeftover:"From leftovers: {v}",
+  paidWith:"Paid from", paidBudget:"This month's budget", fromPot:"paid from the {n} pot",
+  potNote:x=>`It comes out of the “${x.n}” pot and doesn't count towards this month's budget. When ${x.quem} pays back their share, it goes back into the pot.`,
+  movements:"Recent activity", usedLbl:"Money used", returnedLbl:"{v} paid back", noteOpt:"Note (optional)", setAsideMov:"Set aside",
   defaultWho:"the other parent", settingsTitle:"Settings", setSplit:"Split costs with another person",
   setWho:"Who you split with", setWhoHelp:"For example “the other parent”, “Sam” or “my flatmate”.", setPct:"Share you claim",
   setSubs:"Fund savings pots from the holiday and Christmas bonuses",
   demo:{renda:"Rent",luz:"Electricity",net:"Internet & phone",super:"Groceries",comb:"Fuel",poup:"Savings",lojaA:"Supermarket",lojaB:"Corner shop",posto:"Petrol station",
-    seguro:"Car insurance",iuc:"Road tax",poupanca:"Emergency fund",natacao:"Swimming lessons",visita:"School trip",material:"School supplies"}
+    seguro:"Car insurance",iuc:"Road tax",poupanca:"Emergency fund",roupa:"Kids' clothes",casaco:"Coat and boots",natacao:"Swimming lessons",visita:"School trip",material:"School supplies"}
 }};
 
 /* ---------- idioma ---------- */
@@ -635,6 +649,9 @@ function semearExemplo(){
     MEM.set("mes-"+ck,JSON.stringify({rendimento:k===3?1250+180:1250,itens:config.despesas.map((d,i)=>({id:d.id,nome:d.nome,previsto:d.previsto,valor:r2(d.previsto+(varia[i%3][k-1]||0)*(d.orc?2.5:.4)),pago:true,extra:false}))}))}
   config.mealheiros.push({id:"j3",nome:D.poupanca,total:2000,mesVence:0,modo:"mensal",mensal:0,inicial:640,desde:ant,mov:{},pagamentos:[],
     extras:[{id:"x1",mes:chaveDe(new Date(a,m-3,1)),valor:150},{id:"x2",mes:chaveDe(new Date(a,m-2,1)),valor:120}]});
+  const movRoupa={};for(let k=1;k<=4;k++)movRoupa[chaveDe(new Date(a,m-1-k,1))]={valor:20,feito:true};
+  config.mealheiros.push({id:"j4",nome:D.roupa,total:0,mesVence:0,modo:"mensal",mensal:20,inicial:0,desde:chaveDe(new Date(a,m-5,1)),mov:movRoupa,pagamentos:[],extras:[]});
+  partilhadas.itens.push({id:"s4",mes:ant,descricao:D.casaco,valor:46,estado:2,mesRecebido:ch,potId:"j4"});
   MEM.set("config",JSON.stringify(config));MEM.set("partilhadas",JSON.stringify(partilhadas));MEM.set("mes-"+ch,JSON.stringify(mesEx));
 }
 
@@ -661,7 +678,11 @@ const jarMov=j=>(j.mov=j.mov||{});
 const numDe=ch=>Number(ch.split("-")[1]);
 const jarsAtivosEm=ch=>config.mealheiros.filter(j=>j.desde<=ch&&((reforcos(j).includes(numDe(ch))&&j.mensal>0)||jarMov(j)[ch]));
 const jarsAtivos=()=>jarsAtivosEm(chave);
+const potPorId=id=>id?config.mealheiros.find(j=>j.id===id):null;
+const potDe=i=>potPorId(i.potId); // o mealheiro de onde saiu o dinheiro, se ainda existir
 function jarSaldo(j){let s=j.inicial||0;for(const k in jarMov(j)){const x=j.mov[k];if(x.feito)s+=x.valor}
+  // compras a dividir pagas por este mealheiro: sai o total, volta a parte da outra pessoa quando é recebida
+  for(const i of partilhadas.itens)if(i.potId===j.id){s-=i.valor;if(i.estado===2)s+=metade(i)}
   for(const x of (j.extras||[]))s+=x.valor;
   for(const p of (j.pagamentos||[]))s-=p.valor;return r2(s)}
 const jarValorEm=(j,ch)=>{const x=jarMov(j)[ch];return x&&x.valor!=null?x.valor:j.mensal};
@@ -688,7 +709,7 @@ const pagoDe=i=>i.orc?gastoDe(i):(i.pago?valorDe(i):0);
 function contasEm(ch,m){
   const cT=m.itens.reduce((s,i)=>s+valorDe(i),0), cP=m.itens.reduce((s,i)=>s+pagoDe(i),0);
   const js=jarsAtivosEm(ch); const jT=js.reduce((s,j)=>s+jarValorEm(j,ch),0), jP=js.filter(j=>jarFeitoEm(j,ch)).reduce((s,j)=>s+jarValorEm(j,ch),0);
-  const doMes=defs().dividir?partilhadas.itens.filter(i=>i.mes===ch):[];
+  const doMes=defs().dividir?partilhadas.itens.filter(i=>i.mes===ch&&!potDe(i)):[];
   const pTotal=doMes.reduce((s,i)=>s+i.valor,0), pM=doMes.reduce((s,i)=>s+(i.valor-metade(i)),0); // pM = a tua parte
   return {cT,cP,jT,jP,pM,pTotal,porReceber:porReceberTotal(),total:cT+jT+pM,pago:cP+jP+pM}
 }
@@ -949,9 +970,17 @@ function desenharJars(){
     else {const porMes=restam>0?r2(falta/restam):falta; const chega=restam>0&&porMes<=j.mensal+0.005;
       dica=chega?`<div class="dica">${t("monthlyOk",{v:eur.format(j.mensal)})}</div>`
         :`<div class="dica aviso">${t("monthlyShort",{m:mv,v:eur.format(porMes),r:restam})}</div>`}
-    const ult=(j.pagamentos||[]).slice(-1)[0];
+    const ult=semData?null:(j.pagamentos||[]).slice(-1)[0];
+    // últimos movimentos: o que entrou e saiu do mealheiro
+    const movs=[...(j.pagamentos||[]).map(p=>({mes:p.mes,txt:p.desc||t("usedLbl"),v:-p.valor})),
+      ...partilhadas.itens.filter(i=>i.potId===j.id).map(i=>({mes:i.mes,txt:i.descricao+(i.estado===2?" · "+t("returnedLbl",{v:eur.format(metade(i))}):""),v:-(i.estado===2?i.valor-metade(i):i.valor)})),
+      ...(j.extras||[]).map(x=>({mes:x.mes,txt:t("fromLeftover",{v:""}).replace(/:\s*$/,""),v:x.valor})),
+      ...Object.entries(jarMov(j)).filter(([,x])=>x.feito&&x.valor).map(([k,x])=>({mes:k,txt:t("setAsideMov"),v:x.valor}))]
+      .sort((a,b)=>a.mes<b.mes?1:-1).slice(0,4);
+    const movsHTML=movs.length?`<div class="movs"><span class="lbl">${t("movements")}</span>${movs.map(x=>`<div class="mov"><span>${cap(MESES_C[numDe(x.mes)-1])} · ${esc(x.txt)}</span><b class="${x.v<0?"neg":"pos"}">${x.v<0?"−":"+"}${eur.format(Math.abs(x.v))}</b></div>`).join("")}</div>`:"";
     let extra="";
-    if(jarAberto===j.id&&jarModo==="pagar") extra=`<div class="grade"><label class="todo">${semData?t("amountUsed"):t("amountPaid")}<span class="valor"><input id="pgV" inputmode="decimal" value="${semData?"":dec.format(j.total)}"><span>€</span></span></label></div>
+    if(jarAberto===j.id&&jarModo==="pagar") extra=`<div class="grade"><label class="todo">${semData?t("amountUsed"):t("amountPaid")}<span class="valor"><input id="pgV" inputmode="decimal" value="${semData?"":dec.format(j.total)}"><span>€</span></span></label>
+      <label class="todo">${t("noteOpt")}<input class="campo" id="pgD" autocomplete="off"></label></div>
       <div class="acoes"><button class="btn jar sm" data-a="pg">${t(semData?"logUse":"logPayment",{m:nomeMes(chave)})}</button><button class="btn sec sm" data-a="x">${t("cancel")}</button></div>`;
     if(jarAberto===j.id&&jarModo==="editar") extra=`<div class="grade">
       <label class="todo">${t("name")}<input class="campo" id="eN" value="${esc(j.nome)}"></label>
@@ -969,6 +998,7 @@ function desenharJars(){
       ${semData&&!j.total?"":`<div class="barra" aria-hidden="true"><i class="j" style="width:${pct}%"></i></div>`}
       ${dica}
       ${ult?`<span class="nota">${t("lastPayment",{v:eur.format(ult.valor),m:nomeMes(ult.mes)})}</span>`:""}
+      ${semData?movsHTML:""}
       ${extra||`<div class="acoes"><button class="btn sec sm" data-a="pagar">${semData?t("iUsed"):t("iPaid")}</button><button class="link" data-a="editar">${t("edit")}</button></div>`}
     </article>`}).join("");
   B.querySelectorAll(".jarc").forEach(card=>{
@@ -979,7 +1009,7 @@ function desenharJars(){
       if(a==="x"){jarAberto=null;desenharJars();return}
       if(a==="del"){jarModo="apagar";desenharJars();return}
       if(a==="del2"){config.mealheiros=config.mealheiros.filter(x=>x.id!==j.id);jarAberto=null;gravarConfig();desenhar();return}
-      if(a==="pg"){const v=parse($("pgV").value);if(v==null)return;(j.pagamentos=j.pagamentos||[]).push({mes:chave,valor:v});jarAberto=null;gravarConfig();desenhar();return}
+      if(a==="pg"){const v=parse($("pgV").value);if(v==null)return;(j.pagamentos=j.pagamentos||[]).push({mes:chave,valor:v,desc:$("pgD").value.trim()});jarAberto=null;gravarConfig();desenhar();return}
       if(a==="ok"){j.nome=$("eN").value.trim()||j.nome;j.total=parse($("eT").value)??j.total;j.mesVence=Number($("eM").value);
         const novoModo=$("eModo").value; if(novoModo!==modo&&parse($("eP").value)===j.mensal){j.mensal=valorPadrao(j.total,novoModo)} else j.mensal=parse($("eP").value)??j.mensal; j.modo=novoModo;j.inicial=parse($("eI").value)??0;jarAberto=null;gravarConfig();desenhar()}
     });
@@ -993,6 +1023,8 @@ const chipHTML=i=>{const e=t("estados")[i.estado];return `<button class="chip s$
 function desenharPai(){
   const P=$("pai"), fx=fixasAtivas(), on=defs().dividir;
   $("tab-pai").hidden=!on; if(!on&&vista==="pai")irPara("mes");
+  {const sel=$("pPot"),atual=sel.value;sel.innerHTML=`<option value="">${t("paidBudget")}</option>`+config.mealheiros.map(j=>`<option value="${j.id}">${esc(j.nome)}</option>`).join("");
+   sel.value=potPorId(atual)?atual:"";sel.closest("label").hidden=!config.mealheiros.length;notaPago()}
   ["paiCab","pai","paiForm"].forEach(id=>$(id).hidden=!on); if(!on){$("copiaBox").hidden=true;return}
   const outros=paiVisiveis().filter(i=>!(i.fixa&&i.mes===chave));
   $("copiar").hidden=!partilhadas.itens.some(i=>i.estado===0);
@@ -1011,7 +1043,7 @@ function desenharPai(){
   if(outros.length){
     h+=(fx.length?`<div class="sep" style="color:var(--pen);background:var(--pen-soft)">${t("oneOffSep")}</div>`:"")+outros.map(i=>`<div class="linha pai" data-id="${i.id}">
       <div style="min-width:0"><div class="nome">${esc(i.descricao)}</div>
-        <div class="sub">${cap(nomeMes(i.mes))} · ${t("youPaid",{v:eur.format(i.valor)})}${i.estado===2&&i.mesRecebido?` · ${t("receivedInM",{m:nomeMes(i.mesRecebido)})}`:""}</div></div>
+        <div class="sub">${cap(nomeMes(i.mes))} · ${t("youPaid",{v:eur.format(i.valor)})}${potDe(i)?` · ${esc(t("fromPot",{n:potDe(i).nome}))}`:""}${i.estado===2&&i.mesRecebido?` · ${t("receivedInM",{m:nomeMes(i.mesRecebido)})}`:""}</div></div>
       <div class="metade"><b>${eur.format(metade(i))}</b>${chipHTML(i)}</div>
       <button class="apagar" aria-label="${esc(t("deleteX",{n:i.descricao}))}">✕</button></div>`).join("");
   }
@@ -1022,7 +1054,7 @@ function desenharPai(){
     const f=config.partFixas.find(x=>x.id===row.dataset.fixa), r=regFixa(f);
     row.querySelector(".visto").onclick=()=>{
       if(r){ if(r.estado>0)return; partilhadas.itens=partilhadas.itens.filter(x=>x!==r) }
-      else partilhadas.itens.push({id:novoId(),fixa:f.id,mes:chave,descricao:f.nome,valor:valorFixa(f),estado:0,mesRecebido:null});
+      else partilhadas.itens.push({id:novoId(),fixa:f.id,mes:chave,descricao:f.nome,valor:valorFixa(f),estado:0,mesRecebido:null,potId:potPorId(f.potId)?f.potId:null});
       gravarPai();desenhar()};
     if(r) row.querySelector(".chip").onclick=()=>mudarEstado(r);
     ligarValor(row.querySelector("input"),v=>{v=v??f.previsto;
@@ -1065,11 +1097,14 @@ $("jarForm").addEventListener("submit",e=>{e.preventDefault();
 
 $("paiForm").addEventListener("submit",e=>{e.preventDefault();
   const d=$("pNome").value.trim(),v=parse($("pValor").value);if(!d||!v)return;
-  if(paiFixa){config.partFixas.push({id:novoId(),nome:d,previsto:v,desde:chave,valores:{}});gravarConfig()}
-  else{partilhadas.itens.push({id:novoId(),mes:chave,descricao:d,valor:v,estado:0,mesRecebido:null});gravarPai()}
+  const potId=$("pPot").value||null;
+  if(paiFixa){config.partFixas.push({id:novoId(),nome:d,previsto:v,desde:chave,valores:{},potId});gravarConfig()}
+  else{partilhadas.itens.push({id:novoId(),mes:chave,descricao:d,valor:v,estado:0,mesRecebido:null,potId});gravarPai()}
   if(converter&&converter.tipo==="pai"){removerConta(converter.id,false);converter=null}
-  $("pNome").value="";$("pValor").value="";desenhar()});
+  $("pNome").value="";$("pValor").value="";$("pPot").value="";desenhar()});
 $("pFixa").onclick=()=>{paiFixa=true;alternarPar("pFixa","pMes")};
+function notaPago(){const j=potPorId($("pPot").value);$("pNota").textContent=j?t("potNote",{n:j.nome}):t("paiNote")}
+$("pPot").onchange=notaPago;
 $("pMes").onclick=()=>{paiFixa=false;alternarPar("pMes","pFixa")};
 
 $("copiar").onclick=()=>{
