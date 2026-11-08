@@ -252,6 +252,15 @@ textarea.copia{width:100%;min-height:120px;border:1px solid var(--line);border-r
 .mov{display:flex;justify-content:space-between;gap:10px;font-size:13px}
 .mov span{color:var(--muted);min-width:0;overflow-wrap:anywhere}
 .mov b{font-family:var(--num);font-weight:600;white-space:nowrap}
+.linha.naocontou .nome{text-decoration:line-through;color:var(--muted)}
+.linha.naocontou .valor{opacity:.5}
+.tag.nc{background:var(--line);color:var(--muted)}
+.rever{border-color:var(--pen)}
+.rever .r-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;border-top:1px dashed var(--line);font-size:14px}
+.rever .r-item span{min-width:0;overflow-wrap:anywhere}
+.rever .r-item b{font-family:var(--num);font-weight:600;margin-left:auto;white-space:nowrap}
+.estado-mes{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pen);background:var(--pen-soft);border-radius:999px;padding:3px 10px;align-self:flex-start}
+.estado-mes.fechado{color:var(--muted);background:var(--line)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -276,6 +285,7 @@ textarea.copia{width:100%;min-height:120px;border:1px solid var(--line);border-r
   </section>
 
   <main class="vista" id="v-mes">
+    <section class="destino rever" id="rever" hidden></section>
     <section class="resumo" id="resumo"></section>
     <section class="destino" id="destino" hidden></section>
   <div class="cab"><h2 data-i18n="billsTitle"></h2><button class="link" id="modo"></button></div>
@@ -392,7 +402,7 @@ pt:{
   pNamePh:"Despesa (ex.: ATL, consulta)", description:"Descrição", pTotalPh:"total", pTotalAria:"Valor total pago", repeat:"Repetição",
   paiNote:x=>x.pct===50?`Escreve o valor total. Metade conta nas tuas despesas do mês e a outra metade fica a pedir ${x.aQuem}.`:`Escreve o valor total. ${x.pct}% fica a pedir ${x.aQuem} e o resto conta nas tuas despesas do mês.`,
   backupTitle:"Cópia de segurança", export:"Exportar cópia", import:"Importar cópia", pasteText:"Colar texto",
-  version:"Versão 7 · 4 de novembro de 2026", trySample:"Ver com dados de exemplo", language:"Idioma",
+  version:"Versão 9 · 5 de novembro de 2026", trySample:"Ver com dados de exemplo", language:"Idioma",
   saved:"Guardado neste dispositivo", saveFail:"Não foi possível guardar: o espaço do dispositivo pode estar cheio. Exporta uma cópia de segurança.",
   demoSaved:"Exemplo: as alterações não ficam guardadas",
   receivedIn:"Recebi em {mes}", incomePh:"ex.: 1108,09 + 53,03", forBillsOf:"Para as contas de {mes} · recebo por volta do dia", payday:"Dia em que recebes",
@@ -447,8 +457,14 @@ pt:{
   histLine:"Recebido {r} · despesas {g}", distributed:"{v} para mealheiros", avgLeft:"Média do que sobra por mês", histChart:"Gráfico do que sobrou nos últimos meses",
   noDate:"Sem data (poupança)", noDateTag:"Sem data", ofGoal:"objetivo {t}", goalLeft:"Faltam {v} para o objetivo.", iUsed:"Usei dinheiro", amountUsed:"Valor que usaste",
   logUse:"Registar em {m}", fromLeftover:"Do que sobrou: {v}",
-  paidWith:"Pago com", paidBudget:"O orçamento do mês", fromPot:"pago do mealheiro {n}",
-  potNote:x=>`Sai do mealheiro “${x.n}” e não conta no orçamento do mês. Quando receberes a parte ${x.doQuem}, ela volta para o mealheiro.`,
+  forecastTag:"Previsão do mês", closedTag:"Balanço final", leftPast:"sobrou", shortPast:"faltou",
+  realSoFar:x=>x.v>=0?`Até agora, com o que já tem visto, sobram ${x.e}.`:`Até agora, com o que já tem visto, faltam ${x.e}.`,
+  closedNote:"As despesas sem visto não contam: ficam como não aconteceram.", notCounted:"Sem visto (não contou)", notCountedTag:"não contou",
+  reviewTitle:"Fechar {m}", reviewText:"Estas despesas ficaram sem visto e contam como não aconteceram. Se pagaste alguma, toca em Paguei.",
+  reviewPaid:"Paguei", reviewSet:"Pus de parte", reviewOk:"Está tudo certo", histForecast:"previsão", histForecastNote:"As barras claras são previsões de meses ainda em curso.",
+  paidWith:"Pago com", paidBudget:"O orçamento do mês", fromPot:"{p} do mealheiro {n}", fromPotSplit:"{p} do mealheiro {n} · {o} do orçamento",
+  potNote:x=>`A tua parte sai do mealheiro “${x.n}” (tem ${x.s}) e não conta no orçamento do mês. A parte ${x.doQuem} fica a pedir, como sempre.`,
+  potShort:"Como o mealheiro só tem {s}, os restantes {o} da tua parte entram no orçamento do mês.",
   movements:"Últimos movimentos", usedLbl:"Dinheiro usado", returnedLbl:"{v} devolvido", noteOpt:"Nota (opcional)", setAsideMov:"Posto de parte",
   defaultWho:"o pai", settingsTitle:"Definições", setSplit:"Dividir despesas com outra pessoa",
   setWho:"Com quem divides", setWhoHelp:"Escreve com o artigo, por exemplo “o pai”, “a mãe” ou “o João”.", setPct:"Percentagem que pedes",
@@ -472,7 +488,7 @@ en:{
   pNamePh:"Expense (e.g. after-school club, doctor)", description:"Description", pTotalPh:"total", pTotalAria:"Total amount paid", repeat:"Repeats",
   paiNote:x=>x.pct===50?`Enter the full amount. Half counts towards your month and the other half is claimed from ${x.quem}.`:`Enter the full amount. ${x.pct}% is claimed from ${x.quem} and the rest counts towards your month.`,
   backupTitle:"Backup", export:"Export backup", import:"Import backup", pasteText:"Paste text",
-  version:"Version 7 · 4 November 2026", trySample:"Try with sample data", language:"Language",
+  version:"Version 9 · 5 November 2026", trySample:"Try with sample data", language:"Language",
   saved:"Saved on this device", saveFail:"Couldn't save: the device storage may be full. Export a backup.",
   demoSaved:"Sample data: changes are not saved",
   receivedIn:"Received in {mes}", incomePh:"e.g. 1108.09 + 53.03", forBillsOf:"For {mes}'s bills · I get paid around day", payday:"Payday",
@@ -527,8 +543,14 @@ en:{
   histLine:"Received {r} · spent {g}", distributed:"{v} to pots", avgLeft:"Average left per month", histChart:"Chart of what was left in recent months",
   noDate:"No due date (savings)", noDateTag:"No due date", ofGoal:"goal {t}", goalLeft:"{v} to reach the goal.", iUsed:"I used some", amountUsed:"Amount you used",
   logUse:"Log in {m}", fromLeftover:"From leftovers: {v}",
-  paidWith:"Paid from", paidBudget:"This month's budget", fromPot:"paid from the {n} pot",
-  potNote:x=>`It comes out of the “${x.n}” pot and doesn't count towards this month's budget. When ${x.quem} pays back their share, it goes back into the pot.`,
+  forecastTag:"Month forecast", closedTag:"Final balance", leftPast:"left", shortPast:"short",
+  realSoFar:x=>x.v>=0?`So far, counting what's ticked, ${x.e} is left.`:`So far, counting what's ticked, you're ${x.e} short.`,
+  closedNote:"Unticked expenses don't count: they're treated as not having happened.", notCounted:"Unticked (not counted)", notCountedTag:"not counted",
+  reviewTitle:"Close {m}", reviewText:"These were left unticked and count as not having happened. If you paid any of them, tap Paid.",
+  reviewPaid:"Paid", reviewSet:"Set aside", reviewOk:"All good", histForecast:"forecast", histForecastNote:"Lighter bars are forecasts for months still in progress.",
+  paidWith:"Paid from", paidBudget:"This month's budget", fromPot:"{p} from the {n} pot", fromPotSplit:"{p} from the {n} pot · {o} from the budget",
+  potNote:x=>`Your share comes out of the “${x.n}” pot (it has ${x.s}) and doesn't count towards this month's budget. The other share is claimed from ${x.quem} as usual.`,
+  potShort:"The pot only has {s}, so the remaining {o} of your share counts towards this month's budget.",
   movements:"Recent activity", usedLbl:"Money used", returnedLbl:"{v} paid back", noteOpt:"Note (optional)", setAsideMov:"Set aside",
   defaultWho:"the other parent", settingsTitle:"Settings", setSplit:"Split costs with another person",
   setWho:"Who you split with", setWhoHelp:"For example “the other parent”, “Sam” or “my flatmate”.", setPct:"Share you claim",
@@ -594,6 +616,12 @@ const chaveDe=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
 let chave=chaveDe(hoje);
 // mês das contas: o dinheiro recebido num mês paga as contas do mês seguinte
 const mesDasContas=dia=>chaveDe(new Date(hoje.getFullYear(),hoje.getMonth()+(hoje.getDate()>=dia?1:0),1));
+// mês em curso (o que o último ordenado está a pagar); os anteriores já fecharam
+const mesAtual=()=>mesDasContas((config&&config.diaRecebe)||20);
+const fechado=ch=>ch<mesAtual();
+// gasto que conta para a sobra: previsão nos meses abertos, só o que tem visto nos fechados
+const gastoConta=(ch,c)=>fechado(ch)?c.pago:c.total;
+const mesAntes=ch=>{let [a,m]=ch.split("-").map(Number);m--;if(m<1){m=12;a--}return a+"-"+String(m).padStart(2,"0")};
 const mesAnterior=ch=>{let [a,m]=ch.split("-").map(Number);m--;if(m<1){m=12;a--}return MESES[m-1]};
 let config={rendimento:null,despesas:[],mealheiros:[],partFixas:[]};
 let partilhadas={itens:[]};
@@ -651,7 +679,7 @@ function semearExemplo(){
     extras:[{id:"x1",mes:chaveDe(new Date(a,m-3,1)),valor:150},{id:"x2",mes:chaveDe(new Date(a,m-2,1)),valor:120}]});
   const movRoupa={};for(let k=1;k<=4;k++)movRoupa[chaveDe(new Date(a,m-1-k,1))]={valor:20,feito:true};
   config.mealheiros.push({id:"j4",nome:D.roupa,total:0,mesVence:0,modo:"mensal",mensal:20,inicial:0,desde:chaveDe(new Date(a,m-5,1)),mov:movRoupa,pagamentos:[],extras:[]});
-  partilhadas.itens.push({id:"s4",mes:ant,descricao:D.casaco,valor:46,estado:2,mesRecebido:ch,potId:"j4"});
+  partilhadas.itens.push({id:"s4",mes:ant,descricao:D.casaco,valor:46,estado:2,mesRecebido:ch,potId:"j4",potValor:23});
   MEM.set("config",JSON.stringify(config));MEM.set("partilhadas",JSON.stringify(partilhadas));MEM.set("mes-"+ch,JSON.stringify(mesEx));
 }
 
@@ -680,9 +708,13 @@ const jarsAtivosEm=ch=>config.mealheiros.filter(j=>j.desde<=ch&&((reforcos(j).in
 const jarsAtivos=()=>jarsAtivosEm(chave);
 const potPorId=id=>id?config.mealheiros.find(j=>j.id===id):null;
 const potDe=i=>potPorId(i.potId); // o mealheiro de onde saiu o dinheiro, se ainda existir
+const minhaParte=i=>r2(i.valor-metade(i));
+// o mealheiro paga só a tua parte e nunca mais do que tinha quando registaste a compra; o resto vai ao orçamento do mês
+const potParte=i=>potDe(i)?Math.min(i.potValor||0,minhaParte(i)):0;
+function atribuirPot(i){const j=potDe(i);if(!j){i.potValor=null;return}i.potValor=0;i.potValor=r2(Math.min(minhaParte(i),Math.max(0,jarSaldo(j))))}
 function jarSaldo(j){let s=j.inicial||0;for(const k in jarMov(j)){const x=j.mov[k];if(x.feito)s+=x.valor}
   // compras a dividir pagas por este mealheiro: sai o total, volta a parte da outra pessoa quando é recebida
-  for(const i of partilhadas.itens)if(i.potId===j.id){s-=i.valor;if(i.estado===2)s+=metade(i)}
+  for(const i of partilhadas.itens)if(i.potId===j.id)s-=potParte(i);
   for(const x of (j.extras||[]))s+=x.valor;
   for(const p of (j.pagamentos||[]))s-=p.valor;return r2(s)}
 const jarValorEm=(j,ch)=>{const x=jarMov(j)[ch];return x&&x.valor!=null?x.valor:j.mensal};
@@ -709,8 +741,8 @@ const pagoDe=i=>i.orc?gastoDe(i):(i.pago?valorDe(i):0);
 function contasEm(ch,m){
   const cT=m.itens.reduce((s,i)=>s+valorDe(i),0), cP=m.itens.reduce((s,i)=>s+pagoDe(i),0);
   const js=jarsAtivosEm(ch); const jT=js.reduce((s,j)=>s+jarValorEm(j,ch),0), jP=js.filter(j=>jarFeitoEm(j,ch)).reduce((s,j)=>s+jarValorEm(j,ch),0);
-  const doMes=defs().dividir?partilhadas.itens.filter(i=>i.mes===ch&&!potDe(i)):[];
-  const pTotal=doMes.reduce((s,i)=>s+i.valor,0), pM=doMes.reduce((s,i)=>s+(i.valor-metade(i)),0); // pM = a tua parte
+  const doMes=defs().dividir?partilhadas.itens.filter(i=>i.mes===ch):[];
+  const pTotal=doMes.reduce((s,i)=>s+i.valor,0), pM=doMes.reduce((s,i)=>s+(minhaParte(i)-potParte(i)),0); // pM = a tua parte que sai do orçamento
   return {cT,cP,jT,jP,pM,pTotal,porReceber:porReceberTotal(),total:cT+jT+pM,pago:cP+jP+pM}
 }
 const contas=()=>contasEm(chave,mes);
@@ -719,35 +751,38 @@ const contas=()=>contasEm(chave,mes);
 function desenhar(){
   const [a,m]=chave.split("-").map(Number);
   $("mesTitulo").innerHTML=esc(cap(MESES[m-1]))+"<small>"+a+"</small>";
-  desenharResumo();desenharDestino();desenharLista();desenharJars();desenharPai();if(vista==="hist")desenharHist();
+  desenharRever();desenharResumo();desenharDestino();desenharLista();desenharJars();desenharPai();if(vista==="hist")desenharHist();
   $("modo").textContent=editar?t("done"):t("editList");$("modo").hidden=!mes.itens.length&&!editar}
 
 function desenharResumo(){
   if(document.activeElement&&document.activeElement.id==="rend")return;
   const r=mes.rendimento, c=contas();
-  const sobra=r2((r||0)-c.total), falta=Math.max(0,r2(c.total-c.pago)), pago=c.cP+c.pM;
-  const base=Math.max(r||0,c.total)||1, R=54, C=2*Math.PI*R; let feito=0;
+  const fech=fechado(chave), gasto=gastoConta(chave,c);
+  const sobra=r2((r||0)-gasto), falta=Math.max(0,r2(c.total-c.pago)), pago=c.cP+c.pM, real=r2((r||0)-c.pago);
+  const base=Math.max(r||0,gasto)||1, R=54, C=2*Math.PI*R; let feito=0;
   // anel: pago, posto de parte e por pagar; o que fica por preencher é a sobra
-  const arcos=[[pago,"var(--ok)",1],[c.jP,"var(--jar)",1],[falta,"var(--pen)",.35]].filter(x=>x[0]>0).map(([v,cor,op])=>{
+  const arcos=[[pago,"var(--ok)",1],[c.jP,"var(--jar)",1],[fech?0:falta,"var(--pen)",.35]].filter(x=>x[0]>0).map(([v,cor,op])=>{
     const len=Math.max(0,Math.min(v/base*C,C-feito)), el=`<circle r="${R}" cx="66" cy="66" fill="none" stroke="${cor}" stroke-opacity="${op}" stroke-width="14" stroke-dasharray="${len.toFixed(2)} ${(C-len).toFixed(2)}" stroke-dashoffset="${(-feito).toFixed(2)}" transform="rotate(-90 66 66)"/>`;
     feito+=len;return el}).join("");
   $("resumo").innerHTML=`
+    <span class="estado-mes ${fech?"fechado":""}">${fech?t("closedTag"):t("forecastTag")}</span>
     <div><label class="lbl" for="rend">${t("receivedIn",{mes:mesAnterior(chave)})}</label>
       <div class="campo-eur"><input id="rend" inputmode="decimal" placeholder="${t("incomePh")}" value="${r!=null?dec.format(r):""}"><span>€</span></div>
       <div class="sub" style="margin-top:6px">${t("forBillsOf",{mes:MESES[mesNum()-1]})}
         <select id="dia" class="campo" style="width:auto;padding:2px 6px" aria-label="${t("payday")}">${Array.from({length:28},(_,k)=>`<option ${k+1===(config.diaRecebe||20)?"selected":""}>${k+1}</option>`).join("")}</select></div></div>
     <div class="anel">
       <div class="anel-g"><svg viewBox="0 0 132 132" aria-hidden="true"><circle r="54" cx="66" cy="66" fill="none" stroke="var(--line)" stroke-width="14"/>${arcos}</svg>
-        <div class="anel-c">${r==null?`<b>—</b><small>${t("leftShort")}</small>`:`<b class="${sobra>=0?"pos":"neg"}">${eur.format(Math.abs(sobra))}</b><small>${sobra>=0?t("leftShort"):t("shortShort")}</small>`}</div></div>
+        <div class="anel-c">${r==null?`<b>—</b><small>${t("leftShort")}</small>`:`<b class="${sobra>=0?"pos":"neg"}">${eur.format(Math.abs(sobra))}</b><small>${sobra>=0?t(fech?"leftPast":"leftShort"):t(fech?"shortPast":"shortShort")}</small>`}</div></div>
       <div class="leg">
         <div><span><i style="background:var(--ok)"></i>${t("paid")}</span><b>${eur.format(pago)}</b></div>
         <div><span><i style="background:var(--jar)"></i>${t("setAside")}</span><b>${eur.format(c.jP)}</b></div>
-        <div><span><i style="background:var(--pen);opacity:.35"></i>${t("toPay")}</span><b>${eur.format(falta)}</b></div>
+        <div><span><i ${fech?'class="vazia"':'style="background:var(--pen);opacity:.35"'}></i>${fech?t("notCounted"):t("toPay")}</span><b>${eur.format(falta)}</b></div>
         <div class="forte"><span><i class="vazia"></i>${r==null?t("enterIncome"):sobra>=0?t("leftOver"):t("shortLbl")}</span><b class="${r==null?"":sobra>=0?"pos":"neg"}">${r==null?"":eur.format(Math.abs(sobra))}</b></div>
       </div>
     </div>
     <div class="extra">
-      <div><span>${t("totalMonth")}</span><b>${eur.format(c.total)}</b></div>
+      ${r!=null?`<div><span class="nota" style="color:var(--muted)">${fech?t("closedNote"):t("realSoFar",{v:real,e:eur.format(Math.abs(real))})}</span></div>`:""}
+      <div><span>${t("totalMonth")}</span><b>${eur.format(gasto)}</b></div>
       ${c.pTotal?`<div><span>${t("childTotal",{t:eur.format(c.pTotal)})}</span><b>${t("yourShare",{v:eur.format(c.pM)})}</b></div>`:""}
       ${c.porReceber?`<div><span>${t("owed")}</span><b>${eur.format(c.porReceber)}</b></div>`:""}</div>`;
   $("rend").addEventListener("change",e=>{const v=parse(e.target.value);mes.rendimento=v;gravarMes();
@@ -756,11 +791,28 @@ function desenharResumo(){
   $("rend").addEventListener("keydown",e=>{if(e.key==="Enter")e.target.blur()});
 }
 
+/* ---------- fechar o mês anterior ---------- */
+function desenharRever(){
+  const R=$("rever"), ant=mesAntes(chave), m=chave===mesAtual()&&fechado(ant)?lerLocal("mes-"+ant):null;
+  if(!m||m.revisto||!Array.isArray(m.itens)){R.hidden=true;return}
+  const itens=m.itens.filter(i=>!i.orc&&!i.pago&&valorDe(i)>0);
+  const jars=jarsAtivosEm(ant).filter(j=>!jarFeitoEm(j,ant)&&jarValorEm(j,ant)>0);
+  if(!itens.length&&!jars.length){R.hidden=true;return}
+  R.hidden=false;
+  R.innerHTML=`<div class="dest-top"><div><h3>${t("reviewTitle",{m:MESES[numDe(ant)-1]})}</h3><span class="nota">${t("reviewText")}</span></div></div>
+    ${itens.map(i=>`<div class="r-item"><span>${esc(i.nome)}</span><b>${eur.format(valorDe(i))}</b><button class="btn sec sm" type="button" data-i="${i.id}">${t("reviewPaid")}</button></div>`).join("")}
+    ${jars.map(j=>`<div class="r-item"><span>${esc(j.nome)}</span><b>${eur.format(jarValorEm(j,ant))}</b><button class="btn sec sm" type="button" data-j="${j.id}">${t("reviewSet")}</button></div>`).join("")}
+    <div><button class="btn sm" type="button" id="reverOk">${t("reviewOk")}</button></div>`;
+  R.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{const it=m.itens.find(x=>x.id===b.dataset.i);it.pago=true;guardar("mes-"+ant,m);desenhar()});
+  R.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>{const j=config.mealheiros.find(x=>x.id===b.dataset.j);jarMov(j)[ant]={valor:jarValorEm(j,ant),feito:true};gravarConfig();desenhar()});
+  $("reverOk").onclick=()=>{m.revisto=true;guardar("mes-"+ant,m);desenhar()};
+}
+
 /* ---------- destino da sobra ---------- */
 function desenharDestino(){
   const D=$("destino"), r=mes.rendimento;
   if(r==null){D.hidden=true;return}
-  const sobra=r2(r-contas().total), resto=r2(sobra-distEm(chave)), feitos=[];
+  const sobra=r2(r-gastoConta(chave,contas())), resto=r2(sobra-distEm(chave)), feitos=[];
   config.mealheiros.forEach(j=>(j.extras||[]).forEach(x=>{if(x.mes===chave)feitos.push({j,x})}));
   if(sobra<=0&&!feitos.length){D.hidden=true;return}
   D.hidden=false;
@@ -789,7 +841,7 @@ function mesesGuardados(){
 function desenharHist(){
   const H=$("hist");
   const L=mesesGuardados().map(ch=>{const m=ch===chave?mes:lerLocal("mes-"+ch);if(!m||m.rendimento==null||!Array.isArray(m.itens))return null;
-    const c=contasEm(ch,m);return {ch,rec:m.rendimento,gasto:r2(c.total),sobra:r2(m.rendimento-c.total),dist:distEm(ch)}}).filter(Boolean).slice(-12);
+    const c=contasEm(ch,m),g=gastoConta(ch,c);return {ch,rec:m.rendimento,gasto:r2(g),sobra:r2(m.rendimento-g),dist:distEm(ch),prev:!fechado(ch)}}).filter(Boolean).slice(-12);
   if(!L.length){H.innerHTML=`<div class="vazio">${t("histEmpty")}</div>`;return}
   // gráfico de barras: a sobra de cada mês, positiva para cima e negativa para baixo
   const W=340,H0=180,top=22,bot=28,ph=H0-top-bot,n=L.length,slot=W/n,bw=Math.min(30,slot*.62);
@@ -797,13 +849,15 @@ function desenharHist(){
   const curto=v=>Math.abs(v)>=1000?(v/1000).toFixed(1).replace(".",LANG==="pt"?",":".")+"k":String(Math.round(v));
   const barras=L.map((x,k)=>{const cx=slot*k+slot/2,h=Math.max(1.5,Math.abs(x.sobra)/tot*ph),y=x.sobra>=0?y0-h:y0,cor=x.sobra>=0?"var(--ok)":"var(--warn)";
     const ty=x.sobra>=0?y-5:y+h+11, [a,m]=x.ch.split("-").map(Number);
-    return `<rect x="${(cx-bw/2).toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="5" fill="${cor}"${x.ch===chave?"":` fill-opacity=".72"`}/>
+    return `<rect x="${(cx-bw/2).toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="5" fill="${cor}" fill-opacity="${x.prev?".32":x.ch===chave?"1":".78"}"${x.prev?` stroke="${cor}" stroke-dasharray="3 2"`:""}/>
       <text class="v" x="${cx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="middle">${curto(x.sobra)}</text>
       <text x="${cx.toFixed(1)}" y="${H0-8}" text-anchor="middle"${x.ch===chave?' style="font-weight:700;fill:var(--ink)"':""}>${MESES_C[m-1]}${m===1||k===0?" "+String(a).slice(2):""}</text>`}).join("");
-  const media=r2(L.reduce((s,x)=>s+x.sobra,0)/n);
+  const F=L.filter(x=>!x.prev).length?L.filter(x=>!x.prev):L; // a média usa os meses fechados
+  const media=r2(F.reduce((s,x)=>s+x.sobra,0)/F.length);
   H.innerHTML=`<div class="grafico"><svg viewBox="0 0 ${W} ${H0}" role="img" aria-label="${t("histChart")}"><line x1="0" x2="${W}" y1="${y0.toFixed(1)}" y2="${y0.toFixed(1)}" stroke="var(--line)" stroke-width="1"/>${barras}</svg></div>
+    ${L.some(x=>x.prev)?`<span class="nota">${t("histForecastNote")}</span>`:""}
     <div class="media"><span>${t("avgLeft")}</span><b class="${media>=0?"pos":"neg"}">${eur.format(media)}</b></div>
-    <div>${L.slice().reverse().map(x=>`<button type="button" class="hl" data-ch="${x.ch}"><div><b>${cap(nomeMes(x.ch))}</b><span class="nota">${t("histLine",{r:eur.format(x.rec),g:eur.format(x.gasto)})}</span>${x.dist?`<span class="nota">${t("distributed",{v:eur.format(x.dist)})}</span>`:""}</div><b class="${x.sobra>=0?"pos":"neg"}">${eur.format(x.sobra)}</b></button>`).join("")}</div>`;
+    <div>${L.slice().reverse().map(x=>`<button type="button" class="hl" data-ch="${x.ch}"><div><b>${cap(nomeMes(x.ch))}</b><span class="nota">${t("histLine",{r:eur.format(x.rec),g:eur.format(x.gasto)})}</span>${x.dist?`<span class="nota">${t("distributed",{v:eur.format(x.dist)})}</span>`:""}${x.prev?`<span class="nota" style="color:var(--pen)">${t("histForecast")}</span>`:""}</div><b class="${x.sobra>=0?"pos":"neg"}">${eur.format(x.sobra)}</b></button>`).join("")}</div>`;
   H.querySelectorAll(".hl").forEach(b=>b.onclick=()=>{chave=b.dataset.ch;editar=false;orcAberto=null;jarAberto=null;irPara("mes");abrirMes()});
 }
 
@@ -878,10 +932,11 @@ function desenharLista(){
           <div class="plano"><span>${t("planned")}</span><div class="valor"><input id="gP" inputmode="decimal" value="${dec.format(pl)}" aria-label="${esc(t("plannedFor",{n:i.nome}))}"><span>€</span></div></div>
         </div>`:"")}
     const dif=i.valor!=null&&i.valor!==i.previsto;
-    return `<div class="linha ${i.pago?"paga":""}" data-id="${i.id}">
+    const nc=fechado(chave)&&!i.pago;
+    return `<div class="linha ${i.pago?"paga":""} ${nc?"naocontou":""}" data-id="${i.id}">
       <button class="visto" role="checkbox" aria-checked="${i.pago}" aria-label="${esc(t("paidAria",{n:i.nome}))}">${CHECK}</button>
       <div style="min-width:0"><div class="nome">${esc(i.nome)}</div>
-        <div class="sub">${i.extra?`<span class="tag">${t("onlyTag")}</span>`:""}${dif?`<span class="tag dif">${t("usualTag",{v:eur.format(i.previsto||0)})}</span>`:""}</div></div>
+        <div class="sub">${nc?`<span class="tag nc">${t("notCountedTag")}</span>`:""}${i.extra?`<span class="tag">${t("onlyTag")}</span>`:""}${dif?`<span class="tag dif">${t("usualTag",{v:eur.format(i.previsto||0)})}</span>`:""}</div></div>
       <div class="valor"><input inputmode="decimal" value="${dec.format(valorDe(i))}" aria-label="${esc(t("valueThisMonth",{n:i.nome}))}"><span>€</span></div></div>`}).join("");
   if(js.length){
     h+=`<div class="sep">${t("setAsideSep")}</div>`+js.map(j=>{const f=jarFeito(j);
@@ -973,7 +1028,7 @@ function desenharJars(){
     const ult=semData?null:(j.pagamentos||[]).slice(-1)[0];
     // últimos movimentos: o que entrou e saiu do mealheiro
     const movs=[...(j.pagamentos||[]).map(p=>({mes:p.mes,txt:p.desc||t("usedLbl"),v:-p.valor})),
-      ...partilhadas.itens.filter(i=>i.potId===j.id).map(i=>({mes:i.mes,txt:i.descricao+(i.estado===2?" · "+t("returnedLbl",{v:eur.format(metade(i))}):""),v:-(i.estado===2?i.valor-metade(i):i.valor)})),
+      ...partilhadas.itens.filter(i=>i.potId===j.id&&potParte(i)>0).map(i=>({mes:i.mes,txt:i.descricao,v:-potParte(i)})),
       ...(j.extras||[]).map(x=>({mes:x.mes,txt:t("fromLeftover",{v:""}).replace(/:\s*$/,""),v:x.valor})),
       ...Object.entries(jarMov(j)).filter(([,x])=>x.feito&&x.valor).map(([k,x])=>({mes:k,txt:t("setAsideMov"),v:x.valor}))]
       .sort((a,b)=>a.mes<b.mes?1:-1).slice(0,4);
@@ -1043,7 +1098,7 @@ function desenharPai(){
   if(outros.length){
     h+=(fx.length?`<div class="sep" style="color:var(--pen);background:var(--pen-soft)">${t("oneOffSep")}</div>`:"")+outros.map(i=>`<div class="linha pai" data-id="${i.id}">
       <div style="min-width:0"><div class="nome">${esc(i.descricao)}</div>
-        <div class="sub">${cap(nomeMes(i.mes))} · ${t("youPaid",{v:eur.format(i.valor)})}${potDe(i)?` · ${esc(t("fromPot",{n:potDe(i).nome}))}`:""}${i.estado===2&&i.mesRecebido?` · ${t("receivedInM",{m:nomeMes(i.mesRecebido)})}`:""}</div></div>
+        <div class="sub">${cap(nomeMes(i.mes))} · ${t("youPaid",{v:eur.format(i.valor)})}${potDe(i)?` · ${esc(r2(minhaParte(i)-potParte(i))>0?t("fromPotSplit",{p:eur.format(potParte(i)),n:potDe(i).nome,o:eur.format(r2(minhaParte(i)-potParte(i)))}):t("fromPot",{p:eur.format(potParte(i)),n:potDe(i).nome}))}`:""}${i.estado===2&&i.mesRecebido?` · ${t("receivedInM",{m:nomeMes(i.mesRecebido)})}`:""}</div></div>
       <div class="metade"><b>${eur.format(metade(i))}</b>${chipHTML(i)}</div>
       <button class="apagar" aria-label="${esc(t("deleteX",{n:i.descricao}))}">✕</button></div>`).join("");
   }
@@ -1054,11 +1109,11 @@ function desenharPai(){
     const f=config.partFixas.find(x=>x.id===row.dataset.fixa), r=regFixa(f);
     row.querySelector(".visto").onclick=()=>{
       if(r){ if(r.estado>0)return; partilhadas.itens=partilhadas.itens.filter(x=>x!==r) }
-      else partilhadas.itens.push({id:novoId(),fixa:f.id,mes:chave,descricao:f.nome,valor:valorFixa(f),estado:0,mesRecebido:null,potId:potPorId(f.potId)?f.potId:null});
+      else{const n={id:novoId(),fixa:f.id,mes:chave,descricao:f.nome,valor:valorFixa(f),estado:0,mesRecebido:null,potId:potPorId(f.potId)?f.potId:null};atribuirPot(n);partilhadas.itens.push(n)}
       gravarPai();desenhar()};
     if(r) row.querySelector(".chip").onclick=()=>mudarEstado(r);
     ligarValor(row.querySelector("input"),v=>{v=v??f.previsto;
-      if(r){r.valor=v;gravarPai()} else {(f.valores=f.valores||{})[chave]=v;gravarConfig()} desenhar()});
+      if(r){r.valor=v;atribuirPot(r);gravarPai()} else {(f.valores=f.valores||{})[chave]=v;gravarConfig()} desenhar()});
     const parar=row.querySelector('[data-a="parar"]');
     if(parar) parar.onclick=()=>confirmar(row,t("stopQ",{n:esc(f.nome)}),()=>{config.partFixas=config.partFixas.filter(x=>x.id!==f.id);gravarConfig();desenhar()},desenharPai,t("yes"));
   });
@@ -1099,11 +1154,14 @@ $("paiForm").addEventListener("submit",e=>{e.preventDefault();
   const d=$("pNome").value.trim(),v=parse($("pValor").value);if(!d||!v)return;
   const potId=$("pPot").value||null;
   if(paiFixa){config.partFixas.push({id:novoId(),nome:d,previsto:v,desde:chave,valores:{},potId});gravarConfig()}
-  else{partilhadas.itens.push({id:novoId(),mes:chave,descricao:d,valor:v,estado:0,mesRecebido:null,potId});gravarPai()}
+  else{const n={id:novoId(),mes:chave,descricao:d,valor:v,estado:0,mesRecebido:null,potId};atribuirPot(n);partilhadas.itens.push(n);gravarPai()}
   if(converter&&converter.tipo==="pai"){removerConta(converter.id,false);converter=null}
   $("pNome").value="";$("pValor").value="";$("pPot").value="";desenhar()});
 $("pFixa").onclick=()=>{paiFixa=true;alternarPar("pFixa","pMes")};
-function notaPago(){const j=potPorId($("pPot").value);$("pNota").textContent=j?t("potNote",{n:j.nome}):t("paiNote")}
+function notaPago(){const j=potPorId($("pPot").value);if(!j){$("pNota").textContent=t("paiNote");return}
+  const v=parse($("pValor").value)||0,parte=r2(v*(1-pctOutro())),disp=Math.max(0,jarSaldo(j));
+  $("pNota").textContent=t("potNote",{n:j.nome,s:eur.format(disp)})+(v&&parte>disp+0.005?" "+t("potShort",{s:eur.format(disp),o:eur.format(r2(parte-disp))}):"")}
+$("pValor").addEventListener("input",notaPago);
 $("pPot").onchange=notaPago;
 $("pMes").onclick=()=>{paiFixa=false;alternarPar("pMes","pFixa")};
 
@@ -1218,6 +1276,8 @@ async function carregar(){
   config=c||{rendimento:null,despesas:[],mealheiros:[],partFixas:[]};
   config.mealheiros=config.mealheiros||[];config.partFixas=config.partFixas||[];config.despesas=config.despesas||[];
   partilhadas=(await ler("partilhadas"))||{itens:[]};
+  {const ant=partilhadas.itens.filter(i=>i.potId&&i.potValor==null).sort((a,b)=>a.mes<b.mes?-1:1);
+   if(ant.length){ant.forEach(i=>i.potValor=0);ant.forEach(atribuirPot);gravarPai()}}
   chave=mesDasContas(config.diaRecebe||20);editar=false;orcAberto=null;jarAberto=null;
   mostrarUltimaCopia();mostrarInstalar();aplicarTextos();mostrarDefs();
   await abrirMes();

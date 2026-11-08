@@ -20,12 +20,13 @@ The app is available in English and European Portuguese, and follows the browser
 
 - **App-style navigation.** A bottom tab bar with Month, History, Pots, Split and More, like a native phone app.
 - **Month at a glance.** A ring chart of what is paid, set aside and still to pay, with what is left in the centre.
-- **History.** A bar chart and list of what was left each month, with the monthly average. Tapping a month opens it.
+- **Forecast and final balance.** While a month is running, the summary shows the forecast and what is left so far. Once it ends, the month switches to its final balance: only what was ticked off or actually spent counts. A short review card lists anything left unticked, so a forgotten payment can be confirmed with one tap.
+- **History.** A bar chart and list of what was left each month, using the final balance for closed months and marking forecasts for months still running, with the average of closed months. Tapping a month opens it.
 - **Leftover allocation.** What is left at the end of the month can be assigned to any savings pot, and the allocation can be undone.
 - **Monthly bills with check-offs.** Recurring and one-off expenses. Each month starts from the usual amounts, and any amount can be changed for that month only.
 - **Spending envelopes.** For expenses paid in several goes (groceries, fuel, health), the planned amount becomes a budget. Each purchase is logged and the app shows how much is left.
 - **Annual sinking funds.** One fund per yearly expense (car insurance, property tax…), topped up every month or from the holiday and Christmas bonuses. Each fund shows whether it will be ready by the due date. Funds with no due date work as open savings, with an optional goal.
-- **Shared child expenses.** Expenses paid in full and split 50/50. Half counts towards my budget, the other half is tracked as owed (to request → requested → received). A ready-to-send message lists everything still to be requested. A shared purchase can also be paid from a savings pot: the full amount leaves the pot, it does not count against the month, and the other parent's share goes back into the pot once received.
+- **Shared child expenses.** Expenses paid in full and split 50/50. Half counts towards my budget, the other half is tracked as owed (to request → requested → received). A ready-to-send message lists everything still to be requested. A shared purchase can also be paid from a savings pot: only your share leaves the pot, up to what it holds, and any remainder counts against the month. The other parent's share is claimed as usual.
 - **Settings.** Cost splitting can be turned off, the other person renamed and the share changed from 50%. Funding pots from bonuses can be turned off too, so the same app works for couples, single people or flatmates.
 - **Pay-cycle months.** Income received in one month pays the following month's bills. The app opens on the right month based on payday.
 - **Backup and restore.** Export and import all data as a JSON file, using the native share sheet on phones.

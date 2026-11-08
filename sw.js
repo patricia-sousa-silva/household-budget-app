@@ -1,6 +1,6 @@
 // Service worker das Contas do Mês: guarda a app para funcionar sem internet.
 // Ao publicar uma versão nova, muda o número em VERSAO.
-const VERSAO = "contas-v8";
+const VERSAO = "contas-v10";
 const BASE = ["./", "./manifest.webmanifest",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png", "./icons/favicon.png"];
 
