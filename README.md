@@ -18,6 +18,8 @@ The app is available in English and European Portuguese, and follows the browser
 
 ## Features
 
+- **Welcome and household profiles.** First-time visitors see what the app does and pick a profile (living alone, couple, single-parent family, family with children, shared house). Each profile switches on the features that fit, such as cost splitting.
+- **Light and dark themes.** Follows the device by default, with a manual switch in the settings.
 - **App-style navigation.** A bottom tab bar with Month, History, Pots, Split and More, like a native phone app.
 - **Month at a glance.** A ring chart of what is paid, set aside and still to pay, with what is left in the centre.
 - **Forecast and final balance.** While a month is running, the summary shows the forecast and what is left so far. Once it ends, the month switches to its final balance: only what was ticked off or actually spent counts. A short review card lists anything left unticked, so a forgotten payment can be confirmed with one tap.

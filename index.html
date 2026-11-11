@@ -14,7 +14,7 @@
 <meta name="apple-mobile-web-app-title" content="Contas">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap">
 <style>
 :root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{margin:0;font:14px system-ui,-apple-system,sans-serif;-webkit-text-size-adjust:100%}
@@ -28,18 +28,19 @@ img{max-width:100%}
   --pen:#2350B8; --pen-soft:#E3EAFA; --ok:#1F7A4D; --ok-soft:#DDF1E5; --warn:#B4531A; --warn-soft:#FBE8DC;
   --jar:#7A4FB5; --jar-soft:#EEE6F8;
   --shadow:0 1px 2px rgba(24,32,46,.05),0 6px 22px rgba(24,32,46,.07); --bar:rgba(238,242,246,.88);
-  --display:"Familjen Grotesk","Helvetica Neue",Arial,sans-serif;
-  --body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --num:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --display:"Space Grotesk","Helvetica Neue",Arial,sans-serif;
+  --body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --num:"Space Grotesk","Helvetica Neue",Arial,sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0F141C; --paper:#171E29; --ink:#E7ECF3; --muted:#9AA6B6; --line:#2A3443;
-  --pen:#7FA2F0; --pen-soft:#1E2A44; --ok:#5CC98E; --ok-soft:#173326; --warn:#F09A62; --warn-soft:#3A2416;
-  --jar:#B99BEA; --jar-soft:#2B2140; --shadow:0 1px 0 rgba(255,255,255,.03); --bar:rgba(15,20,28,.88); color-scheme:dark}}
+  --bg:#0E1320; --paper:#171D2E; --ink:#F2F4F8; --muted:#B4BCCB; --line:#2A3247;
+  --pen:#8FB4FF; --pen-soft:#1C2740; --ok:#3DDC97; --ok-soft:#17332B; --warn:#FFB547; --warn-soft:#3A2C14;
+  --jar:#A99BFF; --jar-soft:#262347; --shadow:none; --bar:rgba(14,19,32,.9); color-scheme:dark}}
+:root[data-theme="light"]{color-scheme:light}
 :root[data-theme="dark"]{
-  --bg:#0F141C; --paper:#171E29; --ink:#E7ECF3; --muted:#9AA6B6; --line:#2A3443;
-  --pen:#7FA2F0; --pen-soft:#1E2A44; --ok:#5CC98E; --ok-soft:#173326; --warn:#F09A62; --warn-soft:#3A2416;
-  --jar:#B99BEA; --jar-soft:#2B2140; --shadow:0 1px 0 rgba(255,255,255,.03); --bar:rgba(15,20,28,.88); color-scheme:dark}
+  --bg:#0E1320; --paper:#171D2E; --ink:#F2F4F8; --muted:#B4BCCB; --line:#2A3247;
+  --pen:#8FB4FF; --pen-soft:#1C2740; --ok:#3DDC97; --ok-soft:#17332B; --warn:#FFB547; --warn-soft:#3A2C14;
+  --jar:#A99BFF; --jar-soft:#262347; --shadow:none; --bar:rgba(14,19,32,.9); color-scheme:dark}
 
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;
@@ -211,7 +212,7 @@ textarea.copia{width:100%;min-height:120px;border:1px solid var(--line);border-r
 .anel-c small{font-size:11px;color:var(--muted);font-weight:600}
 .pos{color:var(--ok)} .neg{color:var(--warn)}
 .leg{display:flex;flex-direction:column;gap:8px;min-width:0}
-.leg div{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:13px}
+.leg:not(.leg3) div{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:13px}
 .leg span{color:var(--muted);display:flex;align-items:center;gap:7px;min-width:0}
 .leg i{width:9px;height:9px;border-radius:3px;flex:none}
 .leg i.vazia{border:2px solid var(--line)}
@@ -261,11 +262,59 @@ textarea.copia{width:100%;min-height:120px;border:1px solid var(--line);border-r
 .rever .r-item b{font-family:var(--num);font-weight:600;margin-left:auto;white-space:nowrap}
 .estado-mes{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--pen);background:var(--pen-soft);border-radius:999px;padding:3px 10px;align-self:flex-start}
 .estado-mes.fechado{color:var(--muted);background:var(--line)}
+body{font-variant-numeric:tabular-nums}
+/* resumo: valor em grande e barra */
+.heroi{display:flex;flex-direction:column;gap:2px}
+.heroi .k{font-size:13px;font-weight:600;color:var(--muted)}
+.heroi .big{font-family:var(--display);font-size:44px;font-weight:700;line-height:1.05;letter-spacing:-.02em}
+.barra3{display:flex;gap:4px;height:12px}
+.barra3 i{display:block;border-radius:6px;min-width:0}
+.leg3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.leg3 div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.leg3 span{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.leg3 span i{width:8px;height:8px;border-radius:3px;flex:none}
+.leg3 span i.vazia{border:2px solid var(--line)}
+.leg3 b{font-family:var(--display);font-size:15px;font-weight:600}
+.btn{border-radius:14px}
+/* seletor de tema */
+.seg{display:flex;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.seg button{flex:1;border:0;background:transparent;padding:10px 6px;font-size:13px;font-weight:600;color:var(--muted);min-height:44px}
+.seg button[aria-pressed="true"]{background:var(--pen-soft);color:var(--pen)}
+.campo-l{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:var(--muted)}
+/* boas-vindas e perfil */
+.bv{max-width:560px;margin:0 auto;min-height:calc(100vh - 40px);padding-block:36px 8px;display:flex;flex-direction:column;gap:22px}
+.bv .marca{display:flex;align-items:center;gap:12px;font-family:var(--display);font-weight:700;font-size:20px}
+.bv .marca i{width:44px;height:44px;border-radius:14px;background:var(--ok);display:grid;place-items:center}
+.bv .marca svg{width:24px;height:24px;stroke:var(--bg);stroke-width:2.6;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.bv h1{font-family:var(--display);font-size:38px;line-height:1.05;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.bv h1.m{font-size:30px}
+.bv p{margin:0;color:var(--muted);font-size:16px}
+.bv ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:16px;flex:1}
+.bv li{display:flex;gap:14px;align-items:flex-start}
+.bv li i{width:40px;height:40px;flex:none;border-radius:12px;display:grid;place-items:center}
+.bv li svg,.perfil svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.bv li b{display:block;font-size:15px}
+.bv li span{font-size:14px;color:var(--muted)}
+.bv .fim{display:flex;flex-direction:column;gap:8px}
+.bv .btn{height:54px;font-size:16px;border-radius:16px;background:var(--ok);color:var(--bg)}
+.bv .btn:disabled{opacity:.45}
+.bv .link{min-height:48px;color:var(--ink);font-size:15px}
+.perfis{display:flex;flex-direction:column;gap:10px;flex:1}
+.perfil{display:flex;align-items:flex-start;gap:14px;text-align:left;padding:14px;border-radius:18px;border:1.5px solid var(--line);background:var(--paper);color:var(--muted);min-height:68px}
+.perfil b{display:block;color:var(--ink);font-size:15px}
+.perfil span{font-size:13px}
+.perfil .tags{display:none;flex-wrap:wrap;gap:6px;margin-top:8px}
+.perfil .tags em{font-style:normal;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--ok-soft);color:var(--ok)}
+.perfil[aria-pressed="true"]{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.perfil[aria-pressed="true"] span{color:var(--ink)}
+.perfil[aria-pressed="true"] .tags{display:flex}
+.perfil[aria-pressed="true"] .tags em{background:var(--paper)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 
+<div class="bv" id="intro" hidden></div>
 <div class="wrap" id="app">
   <section class="demo" id="demo" hidden>
     <div data-i18n-html="demoBanner"></div>
@@ -351,6 +400,9 @@ textarea.copia{width:100%;min-height:120px;border:1px solid var(--line);border-r
   <main class="vista" id="v-mais" hidden>
   <section class="add defs" id="defs">
     <h2 class="h-cartao" data-i18n="settingsTitle"></h2>
+    <div class="campo-l"><span data-i18n="setTheme"></span>
+      <div class="seg" role="group" data-i18n-aria="setTheme"><button type="button" data-tema="auto" data-i18n="themeAuto"></button><button type="button" data-tema="light" data-i18n="themeLight"></button><button type="button" data-tema="dark" data-i18n="themeDark"></button></div></div>
+    <label class="campo-l"><span data-i18n="setProfile"></span><select class="campo" id="dPerfil"></select></label>
     <label class="chk"><input type="checkbox" id="dDiv"> <span data-i18n="setSplit"></span></label>
     <div class="grade" id="dDivOpts">
       <label class="todo"><span data-i18n="setWho"></span><input type="text" class="campo" id="dQuem" autocomplete="off"><span class="nota" data-i18n="setWhoHelp"></span></label>
@@ -402,7 +454,7 @@ pt:{
   pNamePh:"Despesa (ex.: ATL, consulta)", description:"Descrição", pTotalPh:"total", pTotalAria:"Valor total pago", repeat:"Repetição",
   paiNote:x=>x.pct===50?`Escreve o valor total. Metade conta nas tuas despesas do mês e a outra metade fica a pedir ${x.aQuem}.`:`Escreve o valor total. ${x.pct}% fica a pedir ${x.aQuem} e o resto conta nas tuas despesas do mês.`,
   backupTitle:"Cópia de segurança", export:"Exportar cópia", import:"Importar cópia", pasteText:"Colar texto",
-  version:"Versão 9 · 5 de novembro de 2026", trySample:"Ver com dados de exemplo", language:"Idioma",
+  version:"Versão 10 · 11 de novembro de 2026", trySample:"Ver com dados de exemplo", language:"Idioma",
   saved:"Guardado neste dispositivo", saveFail:"Não foi possível guardar: o espaço do dispositivo pode estar cheio. Exporta uma cópia de segurança.",
   demoSaved:"Exemplo: as alterações não ficam guardadas",
   receivedIn:"Recebi em {mes}", incomePh:"ex.: 1108,09 + 53,03", forBillsOf:"Para as contas de {mes} · recebo por volta do dia", payday:"Dia em que recebes",
@@ -469,6 +521,19 @@ pt:{
   defaultWho:"o pai", settingsTitle:"Definições", setSplit:"Dividir despesas com outra pessoa",
   setWho:"Com quem divides", setWhoHelp:"Escreve com o artigo, por exemplo “o pai”, “a mãe” ou “o João”.", setPct:"Percentagem que pedes",
   setSubs:"Juntar para os mealheiros com os subsídios de férias e de Natal",
+  setTheme:"Aspeto", themeAuto:"Automático", themeLight:"Claro", themeDark:"Escuro", setProfile:"Perfil da casa", profileNone:"Por escolher",
+  leftBig:"Sobra para poupar", shortBig:"Falta para cobrir as contas", leftBigPast:"Sobrou neste mês", shortBigPast:"Faltou neste mês", noIncomeBig:"Indica o que recebeste",
+  introTitle:"As contas da casa, sem folha de cálculo.", introText:"Diz o que recebes e as tuas despesas. A app mostra-te quanto sobra e onde o podes guardar.",
+  intro1:"Sabes quanto sobra antes de o mês acabar", intro1b:"Previsão no início, balanço real no fim.",
+  intro2:"Um mealheiro para cada despesa grande", intro2b:"Seguro, IMI, roupa, férias: juntas aos poucos.",
+  intro3:"Divide despesas sem fazer contas", intro3b:"Dos filhos ou da casa. A mensagem a pedir a parte do outro fica pronta.",
+  intro4:"Os teus dados são só teus", intro4b:"Sem conta nem registo. Ficam neste dispositivo.",
+  introStart:"Começar", stepOf:"Passo 2 de 2", profTitle:"Como é a tua casa?", profText:"A app prepara-se para ti. Podes mudar tudo mais tarde em Mais › Definições.", profGo:"Continuar",
+  perfis:{so:["Vivo sozinha ou sozinho","Um ordenado, as tuas contas e os teus mealheiros."],casal:["Casal","Dois ordenados somados num só orçamento."],
+    mono:["Família monoparental","Um ordenado e despesas dos filhos a dividir com o outro progenitor.",["Despesas a dividir","Mensagem de pedido"]],
+    familia:["Família com filhos","Orçamento comum, com mealheiros para escola e atividades."],
+    partilhada:["Casa partilhada","Divides a renda e as contas com colegas de casa.",["Despesas a dividir","Mensagem de pedido"]]},
+  flatmates:"os colegas de casa",
   demo:{renda:"Renda",luz:"Luz",net:"Internet e telemóvel",super:"Supermercado",comb:"Combustível",poup:"Poupança",lojaA:"Continente",lojaB:"Lidl",posto:"Galp",
     seguro:"Seguro do carro",iuc:"IUC",poupanca:"Fundo de emergência",roupa:"Roupa da criança",casaco:"Casaco e botas",natacao:"Natação",visita:"Visita de estudo",material:"Material escolar"}
 },
@@ -488,7 +553,7 @@ en:{
   pNamePh:"Expense (e.g. after-school club, doctor)", description:"Description", pTotalPh:"total", pTotalAria:"Total amount paid", repeat:"Repeats",
   paiNote:x=>x.pct===50?`Enter the full amount. Half counts towards your month and the other half is claimed from ${x.quem}.`:`Enter the full amount. ${x.pct}% is claimed from ${x.quem} and the rest counts towards your month.`,
   backupTitle:"Backup", export:"Export backup", import:"Import backup", pasteText:"Paste text",
-  version:"Version 9 · 5 November 2026", trySample:"Try with sample data", language:"Language",
+  version:"Version 10 · 11 November 2026", trySample:"Try with sample data", language:"Language",
   saved:"Saved on this device", saveFail:"Couldn't save: the device storage may be full. Export a backup.",
   demoSaved:"Sample data: changes are not saved",
   receivedIn:"Received in {mes}", incomePh:"e.g. 1108.09 + 53.03", forBillsOf:"For {mes}'s bills · I get paid around day", payday:"Payday",
@@ -555,6 +620,19 @@ en:{
   defaultWho:"the other parent", settingsTitle:"Settings", setSplit:"Split costs with another person",
   setWho:"Who you split with", setWhoHelp:"For example “the other parent”, “Sam” or “my flatmate”.", setPct:"Share you claim",
   setSubs:"Fund savings pots from the holiday and Christmas bonuses",
+  setTheme:"Appearance", themeAuto:"Automatic", themeLight:"Light", themeDark:"Dark", setProfile:"Household profile", profileNone:"Not chosen",
+  leftBig:"Left to save", shortBig:"Short of covering the bills", leftBigPast:"Left over this month", shortBigPast:"Short this month", noIncomeBig:"Enter what you received",
+  introTitle:"Household bills, without the spreadsheet.", introText:"Enter what you receive and your expenses. The app shows what's left and where you can put it.",
+  intro1:"Know what's left before the month ends", intro1b:"A forecast at the start, the real balance at the end.",
+  intro2:"A pot for every big expense", intro2b:"Insurance, tax, clothes, holidays: save a little each month.",
+  intro3:"Split costs without the maths", intro3b:"For children or the house. The message asking for the other share is ready to send.",
+  intro4:"Your data stays yours", intro4b:"No account, no sign-up. It stays on this device.",
+  introStart:"Get started", stepOf:"Step 2 of 2", profTitle:"What's your household like?", profText:"The app sets itself up for you. You can change everything later in More › Settings.", profGo:"Continue",
+  perfis:{so:["I live alone","One income, your bills and your pots."],casal:["Couple","Two incomes added into one budget."],
+    mono:["Single-parent family","One income, with children's costs split with the other parent.",["Split costs","Request message"]],
+    familia:["Family with children","A shared budget, with pots for school and activities."],
+    partilhada:["Shared house","You split the rent and bills with flatmates.",["Split costs","Request message"]]},
+  flatmates:"my flatmates",
   demo:{renda:"Rent",luz:"Electricity",net:"Internet & phone",super:"Groceries",comb:"Fuel",poup:"Savings",lojaA:"Supermarket",lojaB:"Corner shop",posto:"Petrol station",
     seguro:"Car insurance",iuc:"Road tax",poupanca:"Emergency fund",roupa:"Kids' clothes",casaco:"Coat and boots",natacao:"Swimming lessons",visita:"School trip",material:"School supplies"}
 }};
@@ -770,15 +848,13 @@ function desenharResumo(){
       <div class="campo-eur"><input id="rend" inputmode="decimal" placeholder="${t("incomePh")}" value="${r!=null?dec.format(r):""}"><span>€</span></div>
       <div class="sub" style="margin-top:6px">${t("forBillsOf",{mes:MESES[mesNum()-1]})}
         <select id="dia" class="campo" style="width:auto;padding:2px 6px" aria-label="${t("payday")}">${Array.from({length:28},(_,k)=>`<option ${k+1===(config.diaRecebe||20)?"selected":""}>${k+1}</option>`).join("")}</select></div></div>
-    <div class="anel">
-      <div class="anel-g"><svg viewBox="0 0 132 132" aria-hidden="true"><circle r="54" cx="66" cy="66" fill="none" stroke="var(--line)" stroke-width="14"/>${arcos}</svg>
-        <div class="anel-c">${r==null?`<b>—</b><small>${t("leftShort")}</small>`:`<b class="${sobra>=0?"pos":"neg"}">${eur.format(Math.abs(sobra))}</b><small>${sobra>=0?t(fech?"leftPast":"leftShort"):t(fech?"shortPast":"shortShort")}</small>`}</div></div>
-      <div class="leg">
-        <div><span><i style="background:var(--ok)"></i>${t("paid")}</span><b>${eur.format(pago)}</b></div>
-        <div><span><i style="background:var(--jar)"></i>${t("setAside")}</span><b>${eur.format(c.jP)}</b></div>
-        <div><span><i ${fech?'class="vazia"':'style="background:var(--pen);opacity:.35"'}></i>${fech?t("notCounted"):t("toPay")}</span><b>${eur.format(falta)}</b></div>
-        <div class="forte"><span><i class="vazia"></i>${r==null?t("enterIncome"):sobra>=0?t("leftOver"):t("shortLbl")}</span><b class="${r==null?"":sobra>=0?"pos":"neg"}">${r==null?"":eur.format(Math.abs(sobra))}</b></div>
-      </div>
+    <div class="heroi"><span class="k">${r==null?t("noIncomeBig"):t((sobra>=0?"leftBig":"shortBig")+(fech?"Past":""))}</span>
+      <b class="big ${r==null?"":sobra>=0?"pos":"neg"}">${r==null?"—":eur.format(Math.abs(sobra))}</b></div>
+    <div class="barra3" aria-hidden="true">${[[pago,"var(--ok)",1],[c.jP,"var(--jar)",1],[fech?0:falta,"var(--pen)",.45],[Math.max(0,sobra),"var(--line)",1]].filter(x=>x[0]>0).map(x=>`<i style="flex:${x[0].toFixed(2)};background:${x[1]};opacity:${x[2]}"></i>`).join("")||'<i style="flex:1;background:var(--line)"></i>'}</div>
+    <div class="leg leg3">
+      <div><span><i style="background:var(--ok)"></i>${t("paid")}</span><b>${eur.format(pago)}</b></div>
+      <div><span><i style="background:var(--jar)"></i>${t("setAside")}</span><b>${eur.format(c.jP)}</b></div>
+      <div><span><i ${fech?'class="vazia"':'style="background:var(--pen);opacity:.45"'}></i>${fech?t("notCounted"):t("toPay")}</span><b>${eur.format(falta)}</b></div>
     </div>
     <div class="extra">
       ${r!=null?`<div><span class="nota" style="color:var(--muted)">${fech?t("closedNote"):t("realSoFar",{v:real,e:eur.format(Math.abs(real))})}</span></div>`:""}
@@ -1252,12 +1328,59 @@ if("serviceWorker" in navigator) addEventListener("load",()=>navigator.serviceWo
 /* ---------- definições ---------- */
 function mostrarDefs(){const d=defs();
   $("dDiv").checked=d.dividir;$("dDivOpts").hidden=!d.dividir;$("dSubs").checked=d.subsidios;
-  $("dQuem").value=d.quem||t("defaultWho");$("dPct").value=d.pct}
+  $("dQuem").value=d.quem||t("defaultWho");$("dPct").value=d.pct;
+  const P=t("perfis");$("dPerfil").innerHTML=(d.perfil?"":`<option value="">${t("profileNone")}</option>`)+PERFIS.map(k=>`<option value="${k}" ${d.perfil===k?"selected":""}>${P[k][0]}</option>`).join("")}
+$("dPerfil").onchange=e=>{if(!e.target.value)return;aplicarPerfil(e.target.value);aplicarTextos();mostrarDefs();desenhar()};
 function mudarDef(campo,valor){config.def={...defs(),[campo]:valor};gravarConfig();aplicarTextos();mostrarDefs();desenhar()}
 $("dDiv").onchange=e=>mudarDef("dividir",e.target.checked);
 $("dSubs").onchange=e=>mudarDef("subsidios",e.target.checked);
 $("dQuem").onchange=e=>{const v=e.target.value.trim();mudarDef("quem",!v||v===t("defaultWho")?null:v)};
 $("dPct").onchange=e=>{const n=Math.round(Number(String(e.target.value).replace(",",".")));mudarDef("pct",n>=1&&n<=99?n:defs().pct)};
+
+/* ---------- aspeto (claro, escuro ou automático) ---------- */
+function aplicarTema(){const tm=lerPref("tema")||"auto";
+  if(tm==="auto")document.documentElement.removeAttribute("data-theme");else document.documentElement.setAttribute("data-theme",tm);
+  document.querySelectorAll("[data-tema]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.tema===tm)));
+  const esc_=tm==="dark"||(tm==="auto"&&matchMedia("(prefers-color-scheme: dark)").matches);
+  const m=document.querySelector('meta[name="theme-color"]');if(m)m.content=esc_?"#0E1320":"#EEF2F6"}
+document.querySelectorAll("[data-tema]").forEach(b=>b.onclick=()=>{gravarPref("tema",b.dataset.tema);aplicarTema()});
+aplicarTema();
+
+/* ---------- perfil da casa ---------- */
+const PERFIS=["so","casal","mono","familia","partilhada"];
+const ICO={so:'<circle cx="12" cy="8" r="3.5"/><path d="M5 20c.6-3.600 3.400-5.500 7-5.500s6.400 1.900 7 5.500"/>',
+  casal:'<circle cx="8.500" cy="8.500" r="3"/><circle cx="16" cy="9.500" r="2.500"/><path d="M2.500 19.500c.5-3.100 2.900-4.800 6-4.800s5.500 1.700 6 4.800M16 14.500c2.800 0 4.900 1.500 5.500 4.500"/>',
+  mono:'<circle cx="9" cy="7.500" r="3.200"/><path d="M3 19.500c.5-3.300 3-5.100 6-5.100 1.400 0 2.700.4 3.700 1.100"/><circle cx="17" cy="13.500" r="2.200"/><path d="M13.200 20c.4-2.200 1.900-3.300 3.800-3.300s3.400 1.100 3.800 3.300"/>',
+  familia:'<circle cx="7" cy="8" r="2.600"/><circle cx="17" cy="8" r="2.600"/><circle cx="12" cy="15" r="2.200"/><path d="M2.500 17c.4-2.400 2.200-3.700 4.500-3.700M21.500 17c-.4-2.400-2.200-3.700-4.500-3.700M8.200 21c.4-2.100 1.900-3.200 3.800-3.200s3.400 1.100 3.800 3.200"/>',
+  partilhada:'<path d="M4 11l8-6.500 8 6.500v8a1.500 1.500 0 0 1-1.500 1.500h-13A1.500 1.500 0 0 1 4 19v-8z"/><path d="M12 20.500v-9M4.500 14.500h15"/>'};
+// cada perfil liga as funções que fazem sentido; tudo pode ser mudado depois nas definições
+function aplicarPerfil(p){const d=defs();
+  d.perfil=p;d.dividir=p==="mono"||p==="partilhada";
+  if(p==="partilhada")d.quem=t("flatmates");else if(d.quem===TXT.pt.flatmates||d.quem===TXT.en.flatmates)d.quem=null;
+  config.def=d;gravarConfig()}
+function mostrarIntro(passo,escolha){
+  const I=$("intro");I.hidden=false;$("app").hidden=true;$("tabbar").hidden=true;
+  const li=(cor,ic,a,b)=>`<li><i style="background:var(--${cor}-soft);color:var(--${cor})"><svg viewBox="0 0 24 24" aria-hidden="true">${ic}</svg></i><div><b>${t(a)}</b><span>${t(b)}</span></div></li>`;
+  if(passo===1){
+    I.innerHTML=`<div class="marca"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.500l4.500 4.500L19 7.500"/></svg></i>${t("appTitle")}</div>
+      <h1>${t("introTitle")}</h1><p>${t("introText")}</p>
+      <ul>${li("ok",'<circle cx="12" cy="12" r="8.500"/><path d="M12 12V6.500M12 12l4 2.500"/>',"intro1","intro1b")}
+        ${li("jar",'<path d="M8.500 3.500h7M9.500 3.500v2.600C7 7.200 5.500 9.300 5.500 12.400V17a3 3 0 0 0 3 3h7a3 3 0 0 0 3-3v-4.600c0-3.100-1.500-5.200-4-6.300V3.500"/><path d="M12 10.500v6M9.500 13.500h5"/>',"intro2","intro2b")}
+        ${li("warn",'<path d="M12 21v-7l-6-6M12 14l6-6M6 4v4h4M18 4v4h-4"/>',"intro3","intro3b")}
+        ${li("pen",'<rect x="5" y="10.500" width="14" height="9.500" rx="2.500"/><path d="M8.500 10.500V8a3.500 3.500 0 0 1 7 0v2.500"/>',"intro4","intro4b")}</ul>
+      <div class="fim"><button class="btn" type="button" id="iGo">${t("introStart")}</button><button class="link" type="button" id="iDemo">${t("trySample")}</button></div>`;
+    $("iGo").onclick=()=>mostrarIntro(2,null);$("iDemo").onclick=entrarDemo;
+  }else{
+    const P=t("perfis");
+    I.innerHTML=`<span class="lbl">${t("stepOf")}</span><h1 class="m">${t("profTitle")}</h1><p>${t("profText")}</p>
+      <div class="perfis">${PERFIS.map(k=>`<button type="button" class="perfil" data-p="${k}" aria-pressed="${k===escolha}"><svg viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px">${ICO[k]}</svg>
+        <div><b>${P[k][0]}</b><span>${P[k][1]}</span>${P[k][2]?`<div class="tags">${P[k][2].map(x=>`<em>${x}</em>`).join("")}</div>`:""}</div></button>`).join("")}</div>
+      <div class="fim"><button class="btn" type="button" id="iOk" ${escolha?"":"disabled"}>${t("profGo")}</button></div>`;
+    I.querySelectorAll(".perfil").forEach(b=>b.onclick=()=>mostrarIntro(2,b.dataset.p));
+    $("iOk").onclick=()=>{aplicarPerfil(escolha);I.hidden=true;$("app").hidden=false;$("tabbar").hidden=false;aplicarTextos();mostrarDefs();desenhar();scrollTo(0,0)};
+  }
+  scrollTo(0,0);
+}
 
 /* ---------- idioma e modo de exemplo ---------- */
 function mudarIdioma(l){
@@ -1286,7 +1409,9 @@ async function carregar(){
   await ligar();
   if(DEMO){semearExemplo();$("demo").hidden=false;$("backup").hidden=true;$("verDemo").hidden=true;$("estado").textContent=t("demoSaved")}
   aplicarTextos();
+  const novo=!DEMO&&!lerLocal("config");
   await carregar();
+  if(novo)mostrarIntro(1,null);
 })();
 })();
 </script>
